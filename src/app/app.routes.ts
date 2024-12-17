@@ -21,15 +21,28 @@ export const routes: Routes = [
     component: customerLayoutComponent,
     children: [
       { path: '', component: HomeComponent },
-      { path: 'products', component: CustomerProductsComponent },
+      {
+        path: 'products',
+        title: 'Drip Dynasty - Browse our catalog',
+        component: CustomerProductsComponent,
+      },
       {
         path: 'products/purchase-processed',
+        title: 'Drip Dynasty - Thank you for your purchase',
         component: PurchaseProcessedComponent,
         canActivate: [purchaseGuard],
       },
       { path: 'products/:id', component: ProductDetailsComponent },
-      { path: 'collections/:category', component: CustomerProductsComponent },
-      { path: 'orders', component: CustomerOrdersComponent },
+      {
+        path: 'collections/:category',
+        title: 'Drip Dynasty - Browse our collections',
+        component: CustomerProductsComponent,
+      },
+      {
+        path: 'orders',
+        title: 'Drip Dynasty - My Order History',
+        component: CustomerOrdersComponent,
+      },
     ],
   },
   {
@@ -63,6 +76,7 @@ export const routes: Routes = [
   },
   {
     path: 'login',
+    title: 'Drip Dynasty - Admin Panel Login',
     component: LoginComponent,
   },
 ];
