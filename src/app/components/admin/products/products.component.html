@@ -1,0 +1,19 @@
+<ng-container *ngIf="!hasError; else Error">
+  <div class="flex justify-between items-center gap-4">
+      <h1 class="ui-header">Products</h1>
+      <ui-nav-button variant="primary" button href="/admin/products/new">
+        Add Product
+      </ui-nav-button>
+    </div>
+    <ui-table 
+      [headers]="headers"
+      [data]="productTableCells"
+      [icons]="icons"
+      [isLoading]="isLoading"
+      (onUserAction)="handleSelectedOption($event)"
+    ></ui-table>
+</ng-container>
+
+<ng-template #Error>
+  <div class="flex justify-center text-destructive">An unkown error happened on the database side!</div>
+</ng-template>

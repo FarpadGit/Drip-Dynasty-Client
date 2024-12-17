@@ -1,0 +1,38 @@
+<div class="w-full sm:w-3/4 md:1/2 lg:w-1/3 container my-6 flex flex-col items-center justify-center">
+    <div class="flex flex-col justify-center w-full p-4 bg-card-secondary border border-border">
+        <form class="space-y-8" [formGroup]="loginForm" (ngSubmit)="login()">
+            <div class="space-y-2">
+            <label class="ui-label" for="username">Username</label>
+            <input
+                class="ui-input"
+                type="text"
+                id="username"
+                name="username"
+                formControlName="username"
+                />
+            <div *ngIf="loginForm.controls.username.errors?.['required'] && loginForm.controls.username.touched" class="text-destructive">Username is required</div>
+            </div>
+            <div class="space-y-2">
+            <label class="ui-label" for="password">Password</label>
+            <input
+                class="ui-input"
+                id="password"
+                name="password"
+                type="password"
+                formControlName="password"
+            />
+            <div *ngIf="loginForm.controls.password.errors?.['required'] && loginForm.controls.password.touched" class="text-destructive">Please type in your password</div>
+            </div>
+            <div class="flex gap-4">
+                <button class="ui-button p-4" variant="secondary" type="button" (click)="onCancel()">
+                    Cancel
+                </button>
+                <button class="ui-button relative !inline-block p-4 w-[60px]" type="submit" [disabled]="!loginForm.valid || isLoading">
+                    <span [ngClass]="{'spinner': isLoading}"></span>
+                    {{isLoading ? '' : 'OK'}}
+                </button>
+            </div>
+        </form>
+    </div>
+    <div *ngIf="hasError" class="flex items-center justify-center w-full text-destructive">Unfortunately an error has occured on the server</div>
+</div>

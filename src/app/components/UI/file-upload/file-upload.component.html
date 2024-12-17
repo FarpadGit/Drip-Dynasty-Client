@@ -1,0 +1,18 @@
+<input id="image" [name]="name" type="file" class="hidden" accept="image/*" multiple #fileUpload (change)="emitFiles($event)">
+<div class="border-4 border-dashed p-4 break-words" [ngClass]="{'border-green bg-blue-400': inDropZone}" 
+    (dragover)="$event.preventDefault(); inDropZone = true" 
+    (dragleave)="$event.preventDefault(); inDropZone = false" 
+    (drop)="handleDrop($event)"
+    >
+    <div class="flex flex-col gap-4">
+        <ng-container *ngIf="fileNames !== ''" >
+            <p class="text-muted-foreground">The following files will be included:</p>
+            <p>{{fileNames}}</p>
+        </ng-container>
+        <ng-container *ngIf="fileNames === ''">
+            <p>Drag and drop your files here
+            <p>or choose a file</p>
+        </ng-container>
+    </div>
+    <button class="ui-button mt-4" type="button" variant="primary" (click)="fileUpload.click()">Upload</button>
+</div>

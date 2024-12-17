@@ -1,0 +1,34 @@
+<div class="option relative flex w-8 mx-auto">
+  <!-- options button -->
+  <button *ngIf="options.length > 0" class="flex justify-center items-center w-full" [disabled]="disabled" (click)="onToggle($event)">
+    <ng-icon name="featherMoreVertical"/>
+  </button>
+  
+  <!-- options menu -->
+  <ul class="absolute list-none flex flex-col w-24 right-0 bg-white border border-[#DDDDDD] rounded shadow-[0px_3px_11px_0px_rgba(1,2,2,0.14)] p-[8px_6px_9px_5px] max-h-[261px] z-50" 
+      [ngClass]="{'top-[10px]': side === 'top', 'bottom-[10px]': side === 'bottom'}"
+      *ngIf="options.length > 0 && isOpen">
+      <!-- boxed feedback message if option failed -->
+      <div *ngIf="getErrorMessage() != undefined" 
+        class="absolute top-0 -left-[7.5rem] w-28 p-4 bg-white border border-[#DDDDDD] rounded text-destructive pointer-events-none z-50">
+          {{getErrorMessage()}}
+      </div>
+      <!-- boxed confirmation dialog with yes/no buttons -->
+      <div *ngIf="dialogOpen" class="absolute top-0 -translate-x-60 flex flex-col w-56 p-4 bg-white border border-[#DDDDDD] rounded z-50 cursor-default">
+        {{getDialogMessage(dialogOpen)}}
+        <div class="flex justify-around">
+          <button class="ui-button" variant="primary" (click)="onDialogConfirm(dialogOpen)">Yes</button>
+          <button class="ui-button" variant="secondary" (click)="$event.stopPropagation(); onDialogCancel()">No</button>
+        </div>
+      </div>
+      <!-- clickable option element -->
+      <li class="relative leading-3 hover:has-[button:enabled]:bg-[#7898B3] hover:rounded hover:has-[button:enabled]:text-white focus:bg-[#245A88] focus:rounded focus:has-[button:enabled]:text-white" 
+        *ngFor="let option of options;trackBy:trackby">
+        <button [class]="'flex justify-center w-full py-3 px-0 disabled:line-through disabled:opacity-50 ' + option.styles" 
+                (click)="onSelect(option, $event)" 
+                [disabled]="option.error != undefined">
+          {{option.label}}
+        </button>
+      </li>
+  </ul>
+</div>

@@ -1,0 +1,20 @@
+<label [hidden]="labelHidden" class="ui-label" [for]="'numberInput_{{title}}'">{{title}}</label>
+<div class="p-1 -m-1 overflow-hidden">
+    <div class="relative flex flex-col">
+        <input
+            class="ui-input"
+            type="text"
+            [id]="'numberInput_{{title}}'"
+            [name]="'numberInput_{{title}}'"
+            [value]="maskedValue"
+            (keydown)="onKeyDown($event)"
+            (keyup)="onKeyUp($event)"
+            (input)="onInput($event)"
+            #input
+        />
+        <div class="absolute flex top-0 left-0 pointer-events-none">
+            <div class="ui-input invisible !inline-block !w-auto !pr-0">{{currentInputValue}}</div>
+            <div class="flex items-center text-sm ml-1 py-2">Ft</div>
+        </div>
+    </div>
+</div>

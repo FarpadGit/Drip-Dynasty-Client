@@ -1,0 +1,16 @@
+<ng-container *ngIf="!hasError; else Error">
+    <div class="flex justify-between items-center gap-4">
+        <h1 class="ui-header">Customers</h1>
+      </div>
+      <ui-table 
+        [headers]="headers"
+        [data]="userTableCells"
+        [isLoading]="isLoading"
+        (onUserAction)="handleSelectedOption($event)"
+      ></ui-table>
+  </ng-container>
+  
+  <ng-template #Error>
+    <div class="flex justify-center text-destructive">An unkown error happened on the database side!</div>
+  </ng-template>
+  

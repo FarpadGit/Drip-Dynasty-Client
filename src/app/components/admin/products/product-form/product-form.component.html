@@ -1,0 +1,126 @@
+<h1 class="ui-header">{{userId == null ? 'Add a New Product' : 'Update Product'}}</h1>
+<p class="text-sm sm:text-base text-muted-foreground mb-8">All fields are <em>required</em> unless marked with a * symbol</p>
+<form class="space-y-8 text-sm sm:text-base" [formGroup]="productForm" (ngSubmit)="addOrUpdateProduct()">
+  <div class="space-y-2" formGroupName="productInfo">
+    <div class="space-y-2">
+      <label class="ui-label" for="name">Name</label>
+      <input
+        class="ui-input"
+        type="text"
+        id="name"
+        name="name"
+        formControlName="name"
+        />
+      <div *ngIf="productInfo.name.errors?.required && productInfo.name.touched" class="text-destructive">Product name is required</div>
+    </div>
+    <div class="space-y-2">
+      <label class="ui-label" for="description" (click)="editor.view.focus()">Description</label>
+      <div class="NgxEditor__Wrapper">
+        <ngx-editor-menu [editor]="editor" [toolbar]="toolbar"></ngx-editor-menu>
+        <ngx-editor
+          [editor]="editor"
+          id="description"
+          name="description" 
+          formControlName="description"
+          placeholder="">
+        </ngx-editor>
+      </div>
+      <div *ngIf="productInfo.description.errors?.required && productInfo.description.touched" class="text-destructive">Please provide some description</div>
+    </div>
+    <div class="space-y-2">
+      <label class="ui-label" for="categories">Categories*</label>
+      <textarea
+        class="ui-textarea"
+        id="categories"
+        name="categories"
+        formControlName="categories"
+      ></textarea>
+      <div class="text-muted-foreground">Categories can be optional but should be seperated by commas when provided.</div>
+    </div>
+    <div class="space-y-2">
+      <label class="ui-label" for="extra">Extra info*</label>
+      <textarea
+        class="ui-textarea"
+        type="text"
+        id="extra"
+        name="extra"
+        formControlName="extra"
+        ></textarea>
+      <div class="text-muted-foreground">Additional info to display in email when a customer makes a purchase.</div>
+    </div>
+    <div class="space-y-2">
+      <ui-number-input
+        [title]="'Price'"
+        formControlName="price"
+        />
+      <div *ngIf="productInfo.price.errors?.required || productInfo.price.errors?.pattern" class="text-destructive">Please set a non-zero price with only numbers</div>
+      <div *ngIf="productInfo.price.errors?.min" class="text-destructive">Product price must be greater then zero</div>
+    </div>
+  </div>
+  <div class="space-y-2">
+    <label class="ui-label" for="discount">Discount*</label>
+    <div class="flex gap-4" formGroupName="discount">
+      <ui-switch
+        [name]="'discount'"
+        class="flex items-center self-start h-10"
+        formControlName="on"
+        />
+      <div class="flex flex-col gap-8 w-full sm:w-3/4 md:w-1/2" *ngIf="discount.on.value === true">
+        <div class="flex flex-col sm:flex-row items-center gap-4">
+          <ui-number-input
+            class="w-full"
+            [title]="'Discount'"
+            [labelHidden]="true"
+            [maxValue]="productInfo.price.value"
+            formControlName="discountValue"
+            />
+            {{" or "}}
+          <div class="flex justify-center items-center gap-2 whitespace-nowrap">
+            <input
+              class="ui-input !w-1/2 sm:!w-20"
+              type="number"
+              id="discountPercent"
+              min="1"
+              max="100"
+              step=".1"
+              [value]="discountPercentage"
+              (change)="onDiscountPercentChange($event)"
+              formControlName="discountPercent"
+              />
+              % off
+          </div>
+        </div>
+        <span>New price: {{discountedPrice}}</span>
+        </div>
+    </div>
+    <div *ngIf="discount.errors?.min || discount.errors?.pattern" class="text-destructive">If you don't want to set a discount use the toggle switch</div>
+  </div>
+  <div class="space-y-2">
+    <div *ngIf="form.images.errors?.requiredFileType" class="text-destructive">Product images can only be of the following files: {{this.requiredFileTypes.join(', ')}}</div>
+    <label class="ui-label" for="image">Images</label>
+    <ui-file-upload [name]="'image'" formControlName="images" [acceptedTypes]="requiredFileTypes" [defaultValues]="imagePaths" (onChange)="handleFilesChanged($event)"></ui-file-upload>
+    <div class="grid grid-cols-2 sm:grid-cols-3 grid-rows-{{imagePreviewRows}} gap-2">
+      <div class="grid grid-cols-1 grid-rows-[15fr_1fr]" *ngFor="let imagePreview of imagePreviews;index as i">
+        <div class="flex" [ui-deletable]="images[i].shouldDelete" (onDelete)="handleImageDelete(i, $event)">
+          <img
+            app-fallback
+            class="object-cover w-full h-full"
+            [src]="imagePreview"
+            alt="Product Image"
+          />
+        </div>
+        <p class="text-muted-foreground h-4 sm:h-6 flex items-start justify-center text-center text-xs sm:text-base break-all overflow-y-auto">{{getFileName(imagePaths[i])}}</p>
+      </div>
+    </div>
+  </div>
+  <div class="flex gap-4">
+    <button class="ui-button" variant="secondary" type="button" (click)="onCancel()">
+      Cancel
+    </button>
+    <button class="ui-button" variant="primary" type="submit" 
+      [disabled]="productForm.controls.productInfo.invalid || imagePaths.length === 0"
+      (click)="validSubmit = true">
+      OK
+    </button>
+  </div>
+</form>

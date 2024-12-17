@@ -1,0 +1,234 @@
+/* You can add global styles to this file, and also import other style files */
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+
+@layer base {
+    :root {
+        --background: 0 0% 100%;
+        --foreground: 222.2 84% 4.9%;
+
+        --card: 0 0% 100%;
+        --card-foreground: 222.2 84% 4.9%;
+
+        --popover: 0 0% 100%;
+        --popover-foreground: 222.2 84% 4.9%;
+
+        // regular buttons
+        --primary: 0 0% 13%;
+        --primary-foreground: 210 40% 98%;
+
+        // alt for regular buttons
+        --secondary: 210 40% 96.1%;
+        --secondary-foreground: 222.2 47.4% 11.2%;
+
+        // secondary and less important text info
+        --muted: 210 40% 96.1%;
+        --muted-foreground: 215.4 16.3% 46.9%;
+
+        // important action buttons
+        // --leading: 0 100% 30%;
+        // --leading-light: 0 100% 50%;
+        --leading: 10 100% 41%;
+        --leading-light: 10 100% 50%;
+        --leading-foreground: 222.2 16% 95%;
+
+        // error messages and image deletion
+        --destructive: 0 100% 60%;
+        --destructive-foreground: 222.2 16% 95%;
+
+        --green: hsl(151, 95%, 76%);
+        --green-light: color-mix(in srgb, var(--green) 30%, white 70%);
+        --green-dark: color-mix(in srgb, var(--green) 30%, black 70%);
+
+        --orange: hsl(32, 99%, 72%);
+        --orange-light: color-mix(in srgb, var(--orange) 30%, white 70%);
+        --orange-dark: color-mix(in srgb, var(--orange) 30%, black 70%);
+
+        --border: 214.3 31.8% 91.4%;
+        --input: 214.3 31.8% 91.4%;
+        --ring: 222.2 84% 4.9%;
+
+        --radius: 0.5rem;
+
+        --font-sans: 'Montserrat';
+        --aeroflux: 'AeroFlux';
+        --steps: 'Steps';
+        --raitor: 'Raitor';
+
+        --card-bevel: 16.1px;
+
+        @media(min-width: 640px) {
+          --card-bevel: 32.2px;
+        }
+    }
+
+    // The customer facing frontend is styled as "dark" while the admin dashboard is not
+    .app-root.dark {
+        --background: 0 0% 6%;
+        // --background: 0 0% 0%;
+        // --background: 263, 24%, 5%;
+        --foreground: 222.2 16% 95%;
+
+        --border: 0 0% 20%;
+
+        --card: 0 0% 4%;
+        --card-secondary: 0 0% 9%;
+        --card-foreground: 222.2 16% 95%;
+
+        --ring: 222.2 16% 95%;
+    }
+
+    .border-gradient-green {
+        border-image: linear-gradient(15deg, var(--green), transparent 10%, transparent 40%, var(--green), transparent 60%, transparent 85%, var(--green), transparent 100%);
+        border-width: 1px;
+        border-image-slice: 1;
+    }
+
+    .text-vertical {
+      writing-mode: vertical-lr;
+      text-orientation: upright;
+    }
+
+    .text-outline-orange {
+      text-shadow: 2px 2px var(--orange), -2px -2px var(--orange), 2px -2px var(--orange), -2px 2px var(--orange);
+      color: var(--orange-dark)
+    }
+
+    // stop tailwind from overwriting default styles used by ngx-editor in product description
+    // (also applied later inside the editor itself as well)
+    .description {
+      ol, ul, menu {
+        list-style: revert;
+        margin: revert;
+        padding: revert;
+      }
+
+      h1, h2, h3, h4, h5, h6 {
+        font-size: revert;
+        font-weight: revert;
+      }
+
+      a {
+        color: revert;
+        text-decoration: revert;
+      }
+    }
+}
+
+@layer base {
+    * {
+        @apply border-border;
+    }
+
+    body {
+        @apply bg-background text-foreground;
+    }
+}
+
+@font-face {
+  font-family: Montserrat;
+  src: local("Montserrat"), url('./assets/Montserrat-Regular.ttf');
+}
+@font-face {
+  font-family: AeroFlux;
+  src: local("AeroFlux"), url('./assets/AeroFlux-Regular.ttf');
+}
+@font-face {
+  font-family: Steps;
+  src: local("Steps"), url('./assets/STEPS.ttf');
+}
+@font-face {
+  font-family: Raitor;
+  src: local("Raitor"), url('./assets/Raitor-Regular.ttf');
+}
+
+// small loading spinner for buttons and table cells
+.spinner {
+    display: inline-block;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    translate: -50% -50%;
+    scale: 1.5;
+    text-indent: -9999em;
+    overflow: hidden;
+    width: 1em;
+    height: 1em;
+    border-radius: 50%;
+    transform: translateZ(0);
+    animation: mltShdSpin 1.7s infinite ease, round 1.7s infinite ease;
+    
+    @keyframes mltShdSpin {
+    0% {
+      box-shadow: 0 -0.83em 0 -0.4em,
+      0 -0.83em 0 -0.42em, 0 -0.83em 0 -0.44em,
+      0 -0.83em 0 -0.46em, 0 -0.83em 0 -0.477em;
+    }
+    5%,
+    95% {
+      box-shadow: 0 -0.83em 0 -0.4em, 
+      0 -0.83em 0 -0.42em, 0 -0.83em 0 -0.44em, 
+      0 -0.83em 0 -0.46em, 0 -0.83em 0 -0.477em;
+    }
+    10%,
+    59% {
+      box-shadow: 0 -0.83em 0 -0.4em, 
+      -0.087em -0.825em 0 -0.42em, -0.173em -0.812em 0 -0.44em, 
+      -0.256em -0.789em 0 -0.46em, -0.297em -0.775em 0 -0.477em;
+    }
+    20% {
+      box-shadow: 0 -0.83em 0 -0.4em, -0.338em -0.758em 0 -0.42em,
+       -0.555em -0.617em 0 -0.44em, -0.671em -0.488em 0 -0.46em, 
+       -0.749em -0.34em 0 -0.477em;
+    }
+    38% {
+      box-shadow: 0 -0.83em 0 -0.4em, -0.377em -0.74em 0 -0.42em,
+       -0.645em -0.522em 0 -0.44em, -0.775em -0.297em 0 -0.46em, 
+       -0.82em -0.09em 0 -0.477em;
+    }
+    100% {
+      box-shadow: 0 -0.83em 0 -0.4em, 0 -0.83em 0 -0.42em, 
+      0 -0.83em 0 -0.44em, 0 -0.83em 0 -0.46em, 0 -0.83em 0 -0.477em;
+    }
+  }
+  
+  @keyframes round {
+    0% { transform: rotate(0deg) }
+    100% { transform: rotate(360deg) }
+  }
+}
+
+// ngx-editor style overrides
+.NgxEditor__Wrapper {
+  border-radius: calc(var(--radius) - 2px);
+  border: 1px solid hsl(var(--input));
+  
+  &:has(.NgxEditor__Content:focus-visible) {
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+    box-shadow: 0 0 0 2px hsl(var(--background)), 0 0 0 4px hsl(var(--ring)), 0 0 #0000;
+  }
+
+  .NgxEditor__Content {
+    height: 15rem;
+    overflow: auto;
+
+    ol, ul, menu {
+      list-style: revert;
+      margin: revert;
+      padding: revert;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+      font-size: revert;
+      font-weight: revert;
+    }
+
+    a {
+      color: revert;
+      text-decoration: revert;
+    }
+  }
+}

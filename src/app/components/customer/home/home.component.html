@@ -1,0 +1,94 @@
+<!-- Hero -->
+<div class="absolute left-0 top-0 w-scrollScreen h-screen bg-[url(./assets/hero.jpg)] bg-cover bg-no-repeat bg-center lg:bg-top flex justify-center items-center">
+  <div class="absolute left-0 top-0 w-full h-full bg-gradient-to-b from-transparent from-70% to-background to-95%"></div>
+</div>
+
+<div class="mt-[37.5vh] lg:mt-[30vh] mb-[52.5vh] lg:mb-[50vh] flex justify-center">
+  <div class="relative animate-entry-main">
+    <h1 class="relative font-Steps text-4xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl select-none glitch text-center" data-title="Drip Dynasty">Drip Dynasty</h1>
+  </div>
+</div>
+
+<!-- New Arrivals Section -->
+<ng-container *ngIf="!newestProducts.isLoading && !newestProducts.hasError; else ErrorOrLoading">
+  <ui-section-head side="left">New Arrivals</ui-section-head>
+  <div class="flex flex-col xl:flex-row justify-center items-center xl:items-end gap-6 xl:gap-4 mb-8 md:overflow-x-auto">
+    <div class="flex flex-col gap-6">
+      <ui-product-card [product]="newestProducts.value![0]" variant="horizontal" class="drop-shadow-green-dark row-span-2"></ui-product-card>
+      <ui-separator color="orange" class="hidden xl:block h-8 mt-10 -scale-x-100"/>
+    </div>
+    <div class="flex gap-4">
+      <div class="flex flex-col justify-end gap-2">
+        <ui-product-card [product]="newestProducts.value![1]" variant="small" class="drop-shadow-green-dark"></ui-product-card>
+        <ui-separator color="orange" class="block xl:hidden h-8 lg:h-20 -scale-x-100"/>
+      </div>
+      <ui-product-card [product]="newestProducts.value![2]" class="drop-shadow-green-dark"></ui-product-card>
+    </div>
+  </div>
+  <ui-slider [animSpeed]="3">
+    <ng-container *ngFor="let product of newestProducts.value?.slice(3)">
+      <ui-product-card [product]="product" variant="small" class="drop-shadow-green-dark keen-slider__slide"></ui-product-card>
+    </ng-container>
+  </ui-slider>
+</ng-container>
+
+<!-- Men & Women -->
+<div class="flex flex-col lg:flex-row gap-8 h-screen w-full my-8">
+  <div class="relative w-full h-full flex justify-center items-center border border-orange rounded-lg bg-[url(./assets/men.jpg)] bg-no-repeat bg-cover bg-center md:bg-top lg:bg-center">
+    <ui-nav-button class="w-full h-full font-Steps text-4xl uppercase font-semibold text-outline-orange" href="/collections/men">Men</ui-nav-button>
+  </div>
+  <div class="relative w-full h-full flex justify-center items-center border border-orange rounded-lg bg-[url(./assets/women.jpg)] bg-no-repeat bg-cover bg-center md:bg-top lg:bg-center">
+    <ui-nav-button class="w-full h-full font-Steps text-4xl uppercase font-semibold text-outline-orange" href="/collections/women">Women</ui-nav-button>
+  </div>
+</div>
+  
+<!-- Best Selling Section -->
+<ng-container *ngIf="!mostPopularProducts.isLoading && !mostPopularProducts.hasError; else ErrorOrLoading">
+  <ui-section-head side="right">Best selling</ui-section-head>
+  <div class="flex flex-col xl:flex-row justify-center items-center xl:items-end gap-6 xl:gap-4 mb-8 md:overflow-x-auto">
+    <div class="flex gap-4">
+      <ui-product-card [product]="mostPopularProducts.value![2]" class="drop-shadow-green-dark"></ui-product-card>
+      <div class="flex flex-col justify-end gap-2">
+        <ui-product-card [product]="mostPopularProducts.value![1]" variant="small" class="drop-shadow-green-dark"></ui-product-card>
+        <ui-separator color="orange" class="block xl:hidden h-8 lg:h-20 -scale-x-100"/>
+      </div>
+    </div>
+    <div class="flex flex-col gap-6">
+      <ui-product-card [product]="mostPopularProducts.value![0]" variant="horizontal" class="drop-shadow-green-dark row-span-2"></ui-product-card>
+      <ui-separator color="orange" class="hidden xl:block h-8 mt-10 -scale-x-100"/>
+    </div>
+  </div>
+  <ui-slider [animSpeed]="-3">
+    <ng-container *ngFor="let product of mostPopularProducts.value?.slice(3)">
+      <ui-product-card [product]="product" variant="small" class="drop-shadow-green-dark keen-slider__slide"></ui-product-card>
+    </ng-container>
+  </ui-slider>
+</ng-container>
+
+<!-- Category List -->
+<ui-section-head color="orange">Browse our catalog</ui-section-head>
+<div class="flex gap-16 lg:h-[75vh] w-full my-8">
+  <div class="hidden lg:flex relative w-1/3 h-full justify-center items-center border border-orange rounded-lg overflow-hidden">
+    <ui-fader class="w-full h-full" [images]="categoryImages" [activeIndex]="categoryIndex" fit="cover" />
+    <ui-separator color="orange" class="absolute bottom-[10%] -right-2 w-4/5 h-8 -scale-x-100" />
+  </div>
+  <div class="w-full lg:w-2/3 flex flex-col justify-center gap-4 overflow-y-auto">
+    <ui-catalog-button href="/products" (onHover)="setCategoryImage('All')">All</ui-catalog-button>
+    <ui-catalog-button href="/collections/jacket" (onHover)="setCategoryImage('Jackets')">Jackets</ui-catalog-button>
+    <ui-catalog-button href="/collections/shirt" (onHover)="setCategoryImage('Shirts')">Shirts</ui-catalog-button>
+    <ui-catalog-button href="/collections/top" (onHover)="setCategoryImage('Tops')">Tops</ui-catalog-button>
+    <ui-catalog-button href="/collections/legwear" (onHover)="setCategoryImage('Legwear')">Legwear</ui-catalog-button>
+    <ui-catalog-button href="/collections/accessory" (onHover)="setCategoryImage('Accessories')">Accessories</ui-catalog-button>
+  </div>
+</div>
+
+<ng-template #ErrorOrLoading>
+  <ng-container *ngIf="newestProducts.isLoading">
+    <div class="w-full flex justify-center">
+      <ui-spinner/>
+    </div>
+  </ng-container>
+  <ng-container *ngIf="newestProducts.hasError">
+    <div class="flex justify-center text-3xl">Our servers are down at the moment, please check back at a later time</div>
+  </ng-container>
+</ng-template>
