@@ -1,6 +1,6 @@
 <ui-section-head>{{plural(category) ?? "Our catalog"}}</ui-section-head>
 <div class="relative grid grid-cols-2 [@media(min-width:580px)_and_(max-width:639px)]:grid-cols-3 md:grid-cols-3 xl:grid-cols-4 gap-x-4 gap-y-10 pt-4 pb-8 min-h-screen">
-  <div class="absolute -left-12 -top-4 w-[110%] h-[100%] min-h-[635px] bg-[url(./assets/product-grid-bg.png)] bg-[10px_-15px] bg-repeat-y brightness-[0.25]"></div>
+  <div class="absolute -left-8 -top-8 w-[calc(100%+4rem)] h-full min-h-[635px] bg-[url(./assets/product-grid-bg.png)] bg-repeat-y bg-contain brightness-50"></div>
   <ng-container *ngIf="!isLoading && !hasError; else ErrorOrLoading">
     <ng-container *ngFor="let product of activeProducts.value;index as i">
       <ui-product-card [product]="product" [animDelay]="i * 100" class="drop-shadow-green-dark"></ui-product-card>
