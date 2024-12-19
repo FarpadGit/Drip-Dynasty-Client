@@ -49,9 +49,8 @@ export class LoginComponent {
         this.authService.RedirectAfterLogin();
       } else {
         this.hasError = true;
+        this.isLoading = false;
       }
-
-      this.isLoading = false;
     }
   }
 }

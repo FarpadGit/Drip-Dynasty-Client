@@ -8,6 +8,7 @@ import { CookieService } from 'ngx-cookie-service';
 })
 export class AuthService {
   private UrlToNavigateFromLoginPage: string = '/admin';
+  private isLoggedIn: boolean = false;
 
   constructor(
     private APIService: APIService,
@@ -32,7 +33,12 @@ export class AuthService {
       const bearer = this.cookieService.get('drip-auth');
       this.APIService.setBearer(bearer);
     }
-    return await this.APIService.checkCredentials();
+    if (this.isLoggedIn) {
+      this.optimisticAuthenticate();
+      return true;
+    }
+    this.isLoggedIn = await this.APIService.checkCredentials();
+    return this.isLoggedIn;
   }
 
   logout() {
@@ -47,6 +53,16 @@ export class AuthService {
   RedirectAfterLogin(url?: string) {
     this.router.navigate([url ?? this.UrlToNavigateFromLoginPage], {
       replaceUrl: true,
+    });
+  }
+
+  // If already logged in then authenticate optimistically - assume server call comes back positive and only deny and log out when it doesn't
+  private optimisticAuthenticate() {
+    this.APIService.checkCredentials().then((res) => {
+      if (res === true) return;
+      this.isLoggedIn = false;
+      this.logout();
+      this.router.navigate(['/']);
     });
   }
 }

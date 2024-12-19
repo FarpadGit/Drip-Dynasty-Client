@@ -101,28 +101,34 @@ export class DashboardComponent {
   }
 
   get numberOfSales() {
+    if (this.sales.isLoading) return 'fetching';
     return formatNumber(this.sales.value?.length || 0);
   }
 
   get salesAmount() {
+    if (this.sales.isLoading) return 'Retrieving data...';
     return formatCurrency(this.totalSales || 0);
   }
 
-  get averageValuePerUser() {
+  get averageValuePerCustomer() {
+    if (this.customers.isLoading) return 'fetching';
     if (!this.customers.value || this.customers.value?.length === 0)
       return formatCurrency(0);
     return formatCurrency(this.avarageSalesValue);
   }
 
-  get userCount() {
+  get customerCount() {
+    if (this.customers.isLoading) return 'Retrieving data...';
     return formatNumber(this.customers.value?.length || 0);
   }
 
   get inactiveCount() {
+    if (this.products.isLoading) return 'fetching';
     return formatNumber(this.inactiveProducts);
   }
 
   get activeCount() {
+    if (this.products.isLoading) return 'Retrieving data...';
     return formatNumber(this.activeProducts);
   }
 

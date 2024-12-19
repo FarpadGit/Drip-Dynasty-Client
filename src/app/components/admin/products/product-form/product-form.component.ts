@@ -110,6 +110,7 @@ export class ProductFormComponent implements OnInit, OnDestroy {
   userId: string | null = null;
   routeParamSub: Subscription | null = null;
   valueChangeSub: Subscription | null = null;
+  product: productType | null = null;
 
   constructor(
     private productService: ProductService,
@@ -127,26 +128,26 @@ export class ProductFormComponent implements OnInit, OnDestroy {
     );
 
     if (this.userId !== null) {
-      const product = await this.productService.getProduct(this.userId);
+      this.product = await this.productService.getProduct(this.userId);
 
-      if (!product) {
+      if (!this.product) {
         this.location.back();
       } else {
         const productFields = this.productForm.controls.productInfo.controls;
         const discountFields = this.productForm.controls.discount.controls;
-        productFields.name.setValue(product.name);
-        productFields.description.setValue(product.description);
+        productFields.name.setValue(this.product.name);
+        productFields.description.setValue(this.product.description);
         productFields.categories.setValue(
-          product.categories?.join(', ') ?? null
+          this.product.categories?.join(', ') ?? null
         );
-        productFields.price.setValue(product.price);
-        productFields.extra.setValue(product.extra ?? null);
+        productFields.price.setValue(this.product.price);
+        productFields.extra.setValue(this.product.extra ?? null);
 
-        discountFields.on.setValue(product.discount > 0);
-        discountFields.discountValue.setValue(product.discount);
+        discountFields.on.setValue(this.product.discount > 0);
+        discountFields.discountValue.setValue(this.product.discount);
         discountFields.discountPercent.setValue(this.discountPercentage);
 
-        this.images = product.imagePaths.map((path) => {
+        this.images = this.product.imagePaths.map((path) => {
           return {
             id: crypto.randomUUID(),
             name: path,

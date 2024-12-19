@@ -1,6 +1,6 @@
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
     <ui-card [title]="'Sales'" [subtitle]="numberOfSales + ' Orders'" [body]="salesAmount"></ui-card>
-    <ui-card [title]="'Customers'" [subtitle]="averageValuePerUser + ' Average Value'" [body]="userCount"></ui-card>
+    <ui-card [title]="'Customers'" [subtitle]="averageValuePerCustomer + ' Average Value'" [body]="customerCount"></ui-card>
     <ui-card [title]="'Active Products'" [subtitle]="inactiveCount + ' Inactive'" [body]="activeCount"></ui-card>
 </div>
 <button class="ui-button mt-4" variant="primary" (click)="openConfirmModal()">Reset database</button>

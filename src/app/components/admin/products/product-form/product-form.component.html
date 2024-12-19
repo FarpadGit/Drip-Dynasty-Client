@@ -10,6 +10,7 @@
         id="name"
         name="name"
         formControlName="name"
+        [placeholder]="userId !== null && product == null ? 'loading details...' : ''"
         />
       <div *ngIf="productInfo.name.errors?.required && productInfo.name.touched" class="text-destructive">Product name is required</div>
     </div>
@@ -22,7 +23,7 @@
           id="description"
           name="description" 
           formControlName="description"
-          placeholder="">
+          [placeholder]="userId !== null && product == null ? 'loading details...' : ''">
         </ngx-editor>
       </div>
       <div *ngIf="productInfo.description.errors?.required && productInfo.description.touched" class="text-destructive">Please provide some description</div>
@@ -34,6 +35,7 @@
         id="categories"
         name="categories"
         formControlName="categories"
+        [placeholder]="userId !== null && product == null ? 'loading details...' : ''"
       ></textarea>
       <div class="text-muted-foreground">Categories can be optional but should be seperated by commas when provided.</div>
     </div>
@@ -45,6 +47,7 @@
         id="extra"
         name="extra"
         formControlName="extra"
+        [placeholder]="userId !== null && product == null ? 'loading details...' : ''"
         ></textarea>
       <div class="text-muted-foreground">Additional info to display in email when a customer makes a purchase.</div>
     </div>
