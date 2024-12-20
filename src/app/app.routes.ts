@@ -6,6 +6,7 @@ import { ProductsComponent as CustomerProductsComponent } from './components/cus
 import { OrdersComponent as CustomerOrdersComponent } from './components/customer/orders/orders.component';
 import { ProductDetailsComponent } from './components/customer/product/details/details.component';
 import { PurchaseProcessedComponent } from './components/customer/purchase-processed/purchase-processed.component';
+import { NotFoundComponent } from './components/customer/not-found/not-found.component';
 import { DashboardComponent } from './components/admin/dashboard/dashboard.component';
 import { ProductsComponent as AdminProductsComponent } from './components/admin/products/products.component';
 import { ProductFormComponent } from './components/admin/products/product-form/product-form.component';
@@ -16,6 +17,46 @@ import { authGuard, authGuardChildren } from './guards/auth.guard';
 import { purchaseGuard } from './guards/purchase.guard';
 
 export const routes: Routes = [
+  {
+    path: 'login',
+    title: 'Drip Dynasty Admin Panel Login',
+    component: LoginComponent,
+  },
+
+  {
+    path: 'admin',
+    title: 'Drip Dynasty Admin Panel',
+    component: AdminLayoutComponent,
+    canActivate: [authGuard],
+    canActivateChild: [authGuardChildren],
+    children: [
+      { path: '', component: DashboardComponent },
+      {
+        path: 'customers',
+        component: CustomersComponent,
+      },
+      {
+        path: 'products',
+        component: AdminProductsComponent,
+      },
+      {
+        path: 'products/new',
+        component: ProductFormComponent,
+      },
+      {
+        path: 'products/:id/edit',
+        component: ProductFormComponent,
+      },
+      {
+        path: 'orders',
+        component: AdminOrdersComponent,
+      },
+      {
+        path: '**',
+        redirectTo: '/admin',
+      },
+    ],
+  },
   {
     path: '',
     component: customerLayoutComponent,
@@ -47,41 +88,11 @@ export const routes: Routes = [
         title: 'Drip Dynasty - My Order History',
         component: CustomerOrdersComponent,
       },
-    ],
-  },
-  {
-    path: 'admin',
-    title: 'Drip Dynasty Admin Panel',
-    component: AdminLayoutComponent,
-    canActivate: [authGuard],
-    canActivateChild: [authGuardChildren],
-    children: [
-      { path: '', component: DashboardComponent },
       {
-        path: 'customers',
-        component: CustomersComponent,
-      },
-      {
-        path: 'products',
-        component: AdminProductsComponent,
-      },
-      {
-        path: 'products/new',
-        component: ProductFormComponent,
-      },
-      {
-        path: 'products/:id/edit',
-        component: ProductFormComponent,
-      },
-      {
-        path: 'orders',
-        component: AdminOrdersComponent,
+        path: '**',
+        title: 'Drip Dynasty - Page Not Found',
+        component: NotFoundComponent,
       },
     ],
-  },
-  {
-    path: 'login',
-    title: 'Drip Dynasty Admin Panel Login',
-    component: LoginComponent,
   },
 ];

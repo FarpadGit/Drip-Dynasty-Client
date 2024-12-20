@@ -1,20 +1,18 @@
-<div class="min-h-[70vh]">
-    <h1 class="text-2xl md:text-4xl font-bold text-foreground mb-4 font-sans">My Orders</h1>
-    <div class="relative flex bg-card-secondary text-card-foreground bg-[url('assets/details-bg.jpg')] bg-cover bg-blend-overlay p-4 gap-4 rounded-2xl overflow-hidden font-sans before:border-gradient-green before:absolute before:top-0 before:left-0 before:w-full before:h-full before:pointer-events-none">
-        <div class="flex flex-col text-justify grow">
-            <form class="mx-auto" #ordersForm="ngForm" (ngSubmit)="handleSubmit()">
-                <div class="p-6 pt-0">
-                    <div className="space-y-2">
-                        <label class="text-sm md:text-base" for="email">Email:</label>
-                        <div class="flex flex-col md:flex-row items-center gap-4">
-                            <input id="email" name="email" class="ui-input md:!w-96 bg-card mt-1" type="email" required email #emailField [(ngModel)]="email" />
-                            <button *ngIf="!sent" class="ui-button w-full md:w-auto mt-1" type="submit" [disabled]="!ordersForm.valid">Send email</button>
-                        </div>
-                        <p *ngIf="sent" class="text-orange text-sm md:text-base">Message sent! Your email should arrive shortly.</p>
+<h1 class="text-2xl md:text-4xl font-bold text-foreground mb-4 font-sans">My Orders</h1>
+<div class="relative flex bg-card-secondary text-card-foreground bg-details-card bg-cover bg-blend-overlay p-4 gap-4 rounded-2xl overflow-hidden font-sans before:border-gradient-green before:absolute before:top-0 before:left-0 before:w-full before:h-full before:pointer-events-none">
+    <div class="flex flex-col text-justify grow">
+        <form class="mx-auto" #ordersForm="ngForm" (ngSubmit)="handleSubmit()">
+            <div class="p-6 pt-0">
+                <div className="space-y-2">
+                    <label class="text-sm md:text-base" for="email">Email:</label>
+                    <div class="flex flex-col md:flex-row items-center gap-4">
+                        <input id="email" name="email" class="ui-input md:!w-96 bg-card mt-1" type="email" required email #emailField [(ngModel)]="email" />
+                        <button *ngIf="!sent" class="ui-button w-full md:w-auto mt-1" type="submit" [disabled]="!ordersForm.valid">Send email</button>
                     </div>
+                    <p *ngIf="sent" class="text-orange text-sm md:text-base">Message sent! Your email should arrive shortly.</p>
                 </div>
-                <p class="p-6 pt-0 text-sm md:text-base">Enter your email and if you placed at least 1 order with us we will send you your order history.</p>
-            </form>
-        </div>
+            </div>
+            <p class="p-6 pt-0 text-sm md:text-base">Enter your email and if you placed at least 1 order with us we will send you your order history.</p>
+        </form>
     </div>
 </div>

@@ -44,6 +44,7 @@ export class AuthService {
   logout() {
     this.APIService.revokeBearer();
     this.cookieService.delete('drip-auth');
+    this.isLoggedIn = false;
   }
 
   setLoginRedirect(url: string) {
@@ -60,7 +61,6 @@ export class AuthService {
   private optimisticAuthenticate() {
     this.APIService.checkCredentials().then((res) => {
       if (res === true) return;
-      this.isLoggedIn = false;
       this.logout();
       this.router.navigate(['/']);
     });

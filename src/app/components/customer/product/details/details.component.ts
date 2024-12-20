@@ -43,6 +43,7 @@ export class ProductDetailsComponent implements OnInit {
 
   async ngOnInit() {
     this.product = (await this.productService.getProduct(this.id)) ?? undefined;
+    if (this.product == undefined) this.router.navigate(['/products']);
   }
 
   setDisplayedImage(index: number | '-' | '+') {

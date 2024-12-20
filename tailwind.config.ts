@@ -72,6 +72,10 @@ const config = {
       fontSize: {
         '2xs': ['0.5rem', '1rem'],
       },
+      backgroundImage: {
+        'product-grid': "url('assets/product-grid-bg.png')",
+        'details-card': "url('assets/details-bg.jpg')",
+      },
       width: {
         scrollScreen: 'calc(100vw - 17px)',
       },
