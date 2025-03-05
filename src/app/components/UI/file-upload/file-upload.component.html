@@ -5,14 +5,14 @@
     (drop)="handleDrop($event)"
     >
     <div class="flex flex-col gap-4">
-        <ng-container *ngIf="fileNames !== ''" >
+        @if(fileNames !== '') {
             <p class="text-muted-foreground">The following files will be included:</p>
             <p>{{fileNames}}</p>
-        </ng-container>
-        <ng-container *ngIf="fileNames === ''">
+        }
+        @else {
             <p>Drag and drop your files here
             <p>or choose a file</p>
-        </ng-container>
+        }
     </div>
     <button class="ui-button mt-4" type="button" variant="primary" (click)="fileUpload.click()">Upload</button>
 </div>

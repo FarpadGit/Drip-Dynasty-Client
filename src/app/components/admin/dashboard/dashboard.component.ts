@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { APIService } from '../../../services/API/api.service';
 import { ProductService } from '../../../services/product.service';
 import { CustomerService } from '../../../services/customer.service';
@@ -18,12 +17,7 @@ import {
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [
-    CommonModule,
-    CardComponent,
-    ConfirmModalComponent,
-    ButtonDirective,
-  ],
+  imports: [CardComponent, ConfirmModalComponent, ButtonDirective],
   templateUrl: './dashboard.component.html',
 })
 export class DashboardComponent {

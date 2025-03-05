@@ -1,3 +1,9 @@
+.container {
+    position: relative;
+    display: flex;
+    width: fit-content;
+}
+
 svg circle {
     stroke: var(--orange);
 }
@@ -50,6 +56,27 @@ svg circle {
 
 #arc8 {
     stroke: var(--orange-light);
+}
+
+.text-label {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    transform: translate(-50%, -50%);
+    opacity: 1;
+    font-size: 18pt;
+    font-family: var(--raitor);
+    text-align: center;
+    transition: opacity 1s ease;
+
+    &.hide {
+        opacity: 0;
+    }
+
+    p:first-child {
+        margin-bottom: 2rem;
+    }
 }
 
 @keyframes rota{

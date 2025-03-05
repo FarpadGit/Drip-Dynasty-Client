@@ -11,6 +11,7 @@ import { CommonModule } from '@angular/common';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { OptionsComponent } from './options/options.component';
 import { NgIconComponent } from '@ng-icons/core';
+import { animate, style, transition, trigger } from '@angular/animations';
 
 export type tableRowType = {
   id: string;
@@ -42,6 +43,14 @@ export type responseObjectType =
   standalone: true,
   imports: [CommonModule, OptionsComponent, NgIconComponent],
   templateUrl: './table.component.html',
+  animations: [
+    trigger('fade-in', [
+      transition(':enter', [
+        style({ opacity: 0 }),
+        animate('500ms', style({ opacity: 1 })),
+      ]),
+    ]),
+  ],
 })
 export class TableComponent implements OnInit, OnDestroy {
   @Input('headers') _headers: (

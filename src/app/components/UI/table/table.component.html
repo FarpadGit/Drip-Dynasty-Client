@@ -4,51 +4,61 @@
         <!-- Table Head -->
         <thead class="[&_tr]:border-b">
             <tr class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
-                <th *ngFor="let header of headers;index as i" class="h-12 px-4 text-center justify-center font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0"
+                @for (header of headers; track header; let i = $index) {
+                    <th class="h-12 px-4 text-center justify-center font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0"
                     [ngStyle]="{'width': headerWidth(i)}">{{header ?? ""}}</th>
+                }
             </tr>
         </thead>
         <!-- Table Body -->
         <tbody class="[&_tr:last-child]:border-0">
-            <tr *ngFor="let datarow of data;index as i;trackBy:trackby" class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
-                <td *ngFor="let datacell of datarow.cells" class="relative p-4 align-middle text-center [&:has([role=checkbox])]:pr-0">
-                    <!-- icon cells -->
-                    <ng-container *ngIf="icons.length > 0 && datacell.toString().startsWith('ICON'); else notIcon">
-                        <ng-icon class="transition-opacity duration-500" 
-                                [ngClass]="{'opacity-0': isLoading, 'opacity-100': !isLoading}" 
-                                [svg]="getIconFor(datacell.toString())?.svg || ''" 
-                                [color]="getIconFor(datacell.toString())?.color" 
-                                [size]="getIconFor(datacell.toString())?.size || '1rem'"
-                                [strokeWidth]="getIconFor(datacell.toString())?.strokeWidth"/>
-                    </ng-container>
-                    <!-- non-icon cells -->
-                    <ng-template #notIcon>
-                        <div class="transition-opacity duration-500" [ngClass]="{'opacity-0': isLoading, 'opacity-100': !isLoading}">
-                            {{datacell}}
-                        </div>
-                    </ng-template>
-                    <!-- loading spinner -->
-                    <span class="transition-opacity duration-500 text-leading" 
-                        [ngClass]="{'spinner opacity-100': isLoading, 'opacity-0': !isLoading}">
-                    </span>
-                </td>
-                <!-- options button -->
-                <td class="p-4 table-cell align-middle text-center [&:has([role=checkbox])]:pr-0">
-                    <ui-options 
-                        [options]="getOptions(datarow.id)" 
-                        [side]="i > data.length - 4 ? 'bottom' : 'top'" 
-                        [isOpen]="isOptionOpen(datarow.id)" 
-                        [disabled]="isLoading" 
-                        (onToggle)="handleToggle(datarow.id)" 
-                        (onDialogOpened)="$event === false ? openDialogId = false : openDialogId = datarow.id"
-                        (onUserSelect)="handleSelectedOption(datarow.id, $event)">
-                    </ui-options>
-                </td>
-            </tr>
+            @for (datarow of data; track trackby; let i = $index) {
+                <tr class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
+                    @for (datacell of datarow.cells; track datacell) {
+                        <td class="relative p-4 align-middle text-center [&:has([role=checkbox])]:pr-0">
+                            @if (icons.length > 0 && datacell.toString().startsWith('ICON')) {
+                                 <!-- icon cells -->
+                                <ng-icon class="transition-opacity duration-500" 
+                                        [ngClass]="{'opacity-0': isLoading, 'opacity-100': !isLoading}" 
+                                        [svg]="getIconFor(datacell.toString())?.svg || ''" 
+                                        [color]="getIconFor(datacell.toString())?.color" 
+                                        [size]="getIconFor(datacell.toString())?.size || '1rem'"
+                                        [strokeWidth]="getIconFor(datacell.toString())?.strokeWidth"/>
+                             }
+                             @else {
+                                <!-- non-icon cells -->
+                                <div class="transition-opacity duration-500" [ngClass]="{'opacity-0': isLoading, 'opacity-100': !isLoading}">
+                                    {{datacell}}
+                                </div>
+                             }
+                             @if (isLoading) {
+                                 <!-- loading spinner -->
+                                 <span class="transition-opacity duration-500 text-leading" @fade-in
+                                     [ngClass]="{'spinner opacity-100': isLoading, 'opacity-0': !isLoading}">
+                                 </span>
+                             }
+                        </td>
+                    }
+                    <!-- options button -->
+                    <td class="p-4 table-cell align-middle text-center [&:has([role=checkbox])]:pr-0">
+                        <ui-options 
+                            [options]="getOptions(datarow.id)" 
+                            [side]="i > data.length - 4 ? 'bottom' : 'top'" 
+                            [isOpen]="isOptionOpen(datarow.id)" 
+                            [disabled]="isLoading" 
+                            (onToggle)="handleToggle(datarow.id)" 
+                            (onDialogOpened)="$event === false ? openDialogId = false : openDialogId = datarow.id"
+                            (onUserSelect)="handleSelectedOption(datarow.id, $event)">
+                        </ui-options>
+                    </td>
+                </tr>
+            }
             <!-- fallback cell -->
-            <tr *ngIf="(!data || data.length === 0) && !isLoading" class="text-center">
-                <td [colSpan]="headers.length">This table is currently empty</td>
-            </tr>
+             @if ((!data || data.length === 0) && !isLoading) {
+                <tr class="text-center">
+                    <td [colSpan]="headers.length">This table is currently empty</td>
+                </tr>
+             }
         </tbody>
     </table>
 </div>

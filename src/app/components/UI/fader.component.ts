@@ -15,8 +15,8 @@ import KeenSlider, { KeenSliderInstance } from 'keen-slider';
   standalone: true,
   imports: [CommonModule, ImageFallbackDirective],
   template: `<div class="overflow-hidden w-full h-full" #slider>
+    @for(imgSrc of images; track imgSrc; let i = $index) {
     <div
-      *ngFor="let imgSrc of images; index as i"
       class="absolute top-0 left-0 w-full h-full flex justify-center"
       [ngStyle]="{ opacity: opacities[i] || 0 }"
     >
@@ -27,6 +27,7 @@ import KeenSlider, { KeenSliderInstance } from 'keen-slider';
         app-fallback
       />
     </div>
+    }
   </div>`,
 })
 export class FaderComponent implements AfterViewInit, OnDestroy {

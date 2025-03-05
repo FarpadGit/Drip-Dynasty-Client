@@ -2,8 +2,12 @@
 <div class="relative flex bg-card-secondary text-card-foreground bg-details-card bg-cover bg-blend-overlay p-4 gap-4 rounded-2xl overflow-hidden font-sans before:border-gradient-green before:absolute before:top-0 before:left-0 before:w-full before:h-full before:pointer-events-none">
     <div class="flex flex-col text-justify grow">
         <div class="w-full my-6 text-center">
-            <p *ngIf="!error" class="text-sm sm:text-base">Your order has been successfully processed. You should recieve an email to the address you provided shortly. Order id: {{orderId}}</p>
-            <p *ngIf="error" class="text-sm sm:text-base">We're afraid an unknown error has occured while processing your purchase. We suggest trying again at a later time.</p>
+            @if(!error) {
+                <p class="text-sm sm:text-base">Your order has been successfully processed. You should recieve an email to the address you provided shortly. Order id: {{orderId}}</p>
+            }
+             @else {
+                 <p class="text-sm sm:text-base">We're afraid an unknown error has occured while processing your purchase. We suggest trying again at a later time.</p>
+             }
         </div>
     </div>
 </div>

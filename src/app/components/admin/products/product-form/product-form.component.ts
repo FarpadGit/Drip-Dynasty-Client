@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { CommonModule, Location, registerLocaleData } from '@angular/common';
+import { Location, registerLocaleData } from '@angular/common';
 import localeHu from '@angular/common/locales/hu';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
@@ -32,7 +32,6 @@ import { NgxEditorModule, Editor, Toolbar } from 'ngx-editor';
   selector: 'app-product-form',
   standalone: true,
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     NgxEditorModule,
     FileUploadComponent,

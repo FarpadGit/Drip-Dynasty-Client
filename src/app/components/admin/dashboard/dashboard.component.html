@@ -4,4 +4,6 @@
     <ui-card [title]="'Active Products'" [subtitle]="inactiveCount + ' Inactive'" [body]="activeCount"></ui-card>
 </div>
 <button class="ui-button mt-4" variant="primary" (click)="openConfirmModal()">Reset database</button>
-<app-confirm-modal *ngIf="isConfirmModalOpen" (close)="closeConfirmModal($event)"></app-confirm-modal>
+@if(isConfirmModalOpen) {
+    <app-confirm-modal (close)="closeConfirmModal($event)"></app-confirm-modal>
+}

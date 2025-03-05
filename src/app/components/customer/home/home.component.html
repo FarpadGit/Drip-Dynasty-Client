@@ -10,7 +10,7 @@
 </div>
 
 <!-- New Arrivals Section -->
-<ng-container *ngIf="!newestProducts.isLoading && !newestProducts.hasError; else ErrorOrLoading">
+ @if(!newestProducts.isLoading && !newestProducts.hasError) {
   <ui-section-head side="left">New Arrivals</ui-section-head>
   <div class="flex flex-col xl:flex-row justify-center items-center xl:items-end gap-6 xl:gap-4 mb-8 md:overflow-x-auto">
     <div class="flex flex-col gap-6">
@@ -26,11 +26,14 @@
     </div>
   </div>
   <ui-slider [animSpeed]="3">
-    <ng-container *ngFor="let product of newestProducts.value?.slice(3)">
+    @for(product of newestProducts.value?.slice(3); track product.id) {
       <ui-product-card [product]="product" variant="small" class="drop-shadow-green-dark keen-slider__slide"></ui-product-card>
-    </ng-container>
+    }
   </ui-slider>
-</ng-container>
+ }
+ @else {
+  <ng-container *ngTemplateOutlet="ErrorOrLoading; context:newestProducts"></ng-container>
+ }
 
 <!-- Men & Women -->
 <div class="flex flex-col lg:flex-row gap-8 h-screen w-full my-8">
@@ -43,7 +46,7 @@
 </div>
   
 <!-- Best Selling Section -->
-<ng-container *ngIf="!mostPopularProducts.isLoading && !mostPopularProducts.hasError; else ErrorOrLoading">
+ @if(!mostPopularProducts.isLoading && !mostPopularProducts.hasError) {
   <ui-section-head side="right">Best selling</ui-section-head>
   <div class="flex flex-col xl:flex-row justify-center items-center xl:items-end gap-6 xl:gap-4 mb-8 md:overflow-x-auto">
     <div class="flex gap-4">
@@ -59,11 +62,14 @@
     </div>
   </div>
   <ui-slider [animSpeed]="-3">
-    <ng-container *ngFor="let product of mostPopularProducts.value?.slice(3)">
+    @for(product of mostPopularProducts.value?.slice(3); track product.id) {
       <ui-product-card [product]="product" variant="small" class="drop-shadow-green-dark keen-slider__slide"></ui-product-card>
-    </ng-container>
+    }
   </ui-slider>
-</ng-container>
+ }
+ @else {
+  <ng-container *ngTemplateOutlet="ErrorOrLoading; context:mostPopularProducts"></ng-container>
+ }
 
 <!-- Category List -->
 <ui-section-head color="orange">Browse our catalog</ui-section-head>
@@ -82,13 +88,13 @@
   </div>
 </div>
 
-<ng-template #ErrorOrLoading>
-  <ng-container *ngIf="newestProducts.isLoading">
+<ng-template #ErrorOrLoading let-loading="isLoading" let-error="hasError">
+  @if(loading) {
     <div class="w-full flex justify-center">
       <ui-spinner/>
     </div>
-  </ng-container>
-  <ng-container *ngIf="newestProducts.hasError">
+  }
+  @if(error) {
     <div class="flex justify-center text-3xl">Our servers are down at the moment, please check back at a later time</div>
-  </ng-container>
+  }
 </ng-template>

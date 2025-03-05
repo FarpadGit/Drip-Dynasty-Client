@@ -8,8 +8,8 @@ import { ButtonDirective } from '../../directives/UI/button.directive';
   standalone: true,
   imports: [CommonModule, RouterLink, ButtonDirective],
   template: `<ng-template #content><ng-content /></ng-template>
+    @if(asButton) {
     <a
-      *ngIf="asButton"
       [routerLink]="disabled ? undefined : href"
       [queryParams]="queryParams"
       tabindex="-1"
@@ -23,14 +23,15 @@ import { ButtonDirective } from '../../directives/UI/button.directive';
         <ng-container *ngTemplateOutlet="content"></ng-container>
       </button>
     </a>
+    } @else {
     <a
-      *ngIf="!asButton"
       class="flex justify-center items-center w-full h-full"
       [routerLink]="disabled ? undefined : href"
       [queryParams]="queryParams"
     >
       <ng-container *ngTemplateOutlet="content"></ng-container>
-    </a>`,
+    </a>
+    }`,
 })
 export class NavButtonComponent {
   @Input() href: string = '';

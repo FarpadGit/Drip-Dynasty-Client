@@ -1,11 +1,10 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-purchase-processed',
   standalone: true,
-  imports: [CommonModule],
+  imports: [],
   templateUrl: './purchase-processed.component.html',
 })
 export class PurchaseProcessedComponent {

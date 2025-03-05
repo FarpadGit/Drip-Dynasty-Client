@@ -10,14 +10,15 @@
     >
     <span [ngClass]="{'transition-none opacity-0': deleteState, 'delay-500': !deleteState}">X</span>
   </div>
-  <div *ngIf="deleteState" 
-      class="absolute top-0 left-0 w-full h-full flex flex-col gap-10 justify-center items-center text-center text-xs sm:text-base text-destructive-foreground font-bold transition-opacity duration-500 animate-fade-in">
-    <span class="p-2">Marked for deletion</span>
-    <button
-      type="button"
-      class="text-destructive-foreground hover:underline"
-      (click)="onRevert($event)">
-        Revert back
-    </button>
-  </div>
+  @if(deleteState) {
+    <div class="absolute top-0 left-0 w-full h-full flex flex-col gap-10 justify-center items-center text-center text-xs sm:text-base text-destructive-foreground font-bold transition-opacity duration-500 animate-fade-in">
+      <span class="p-2">Marked for deletion</span>
+      <button
+        type="button"
+        class="text-destructive-foreground hover:underline"
+        (click)="onRevert($event)">
+          Revert back
+      </button>
+    </div>
+  }
 </div>

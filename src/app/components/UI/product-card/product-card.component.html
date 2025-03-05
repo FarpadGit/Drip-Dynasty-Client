@@ -3,72 +3,93 @@
     <div class="absolute top-[20%] right-0 w-1 h-[30%] bg-green-light"></div>
     <div class="absolute bottom-[20%] left-0 w-1 h-[30%] bg-green-light"></div>
     <div class="flex justify-evenly items-center w-[calc(100%-2px)] h-[calc(100%-2px)] bg-card clippath2" [ngClass]="{'flex-col': variant !== 'horizontal'}">
-        <!-- Normal and small card template -->
-        <ng-container *ngIf="variant !== 'horizontal'; else horizontal">
-            <!-- Product Image Area-->
-            <ui-nav-button class="relative w-full flex justify-center" [href]="'/products/'+product.id"
-            (mouseover)="imagePaths.length > 1 && currentThumbIndex = 1"
-            (mouseleave)="currentThumbIndex = 0"
-            >
-                <!-- New and Sale Badges -->
-                <div class="absolute top-4 left-[15%] lg:left-[10%] flex flex-col gap-2 pointer-events-none z-10">
-                    <ui-badge *ngIf="isNew(product)">New</ui-badge>
-                    <ui-badge *ngIf="product.discount > 0">Sale</ui-badge>
-                </div>
-                <!-- Image -->
-                <ui-fader [images]="imagePaths" 
-                    [class]="'w-3/4 ' + imgHeight"
-                    [alt]="product.name" 
-                    [activeIndex]="currentThumbIndex" />
-            </ui-nav-button>
-            <div class="w-full text-center">
-                <div class="grid grid-rows-2-to-1 grid-cols-1 justify-between lg:h-[6.5rem] p-2 lg:p-4"
-                    [ngClass]="{'h-20 space-y-1.5 sm:space-y-2.5': variant === 'default', 'h-16 sm:h-20 space-y-0.5 sm:space-y-1 lg:space-y-2.5': variant === 'small'}">
-                    <!-- Product Name -->
-                    <ui-nav-button [href]="'/products/'+product.id">
-                        <h3 class="{{titleSize}} font-semibold leading-tight tracking-tight line-clamp-2">{{product.name}}</h3>
-                    </ui-nav-button>
-                    <div class="flex gap-1 md:gap-4 justify-center items-center">
-                        <!-- Product Categories -->
-                        <ng-container *ngFor="let category of product.categories;index as i" >
-                            <ui-nav-button [href]="'/collections/'+category">
-                                <span class="text-xs md:text-sm text-muted-foreground hover:underline">{{category}}</span>
-                            </ui-nav-button>
-                            <span *ngIf="i + 1 != product.categories?.length">/</span>
-                        </ng-container>
-                    </div>
-                </div>
-                <!-- Purchase Button & Price -->
-                <div class="flex justify-center lg:justify-normal items-center gap-12 lg:gap-20 p-2 lg:px-6 lg:py-3"
-                    [ngClass]="{'pt-0': variant === 'small'}">
-                    <ui-nav-button class="hidden sm:block w-1/3" button [href]="'/products/'+product.id">Purchase</ui-nav-button>
-                    <div class="flex flex-col">
-                        <p *ngIf="product.discount > 0" class="text-xs text-leading-foreground select-none line-through">{{formatCurrency(product.price)}}</p>
-                        <p class="text-xs sm:text-base md:text-lg text-leading-foreground select-none">{{formatCurrency(currentPrice)}}</p>
-                    </div>
-                </div>
-            </div>
-        </ng-container>
+        @if(variant !== 'horizontal') {
+            <ng-container *ngTemplateOutlet="vertical"></ng-container>
+        }
+        @else {
+            <ng-container *ngTemplateOutlet="horizontal"></ng-container>
+        }
     </div>
 </div>
+
+<!-- Vertical card template (normal and small) -->
+<ng-template #vertical>
+    <!-- Product Image Area-->
+    <ui-nav-button class="relative w-full flex justify-center" [href]="'/products/'+product.id"
+    (mouseover)="imagePaths.length > 1 && currentThumbIndex = 1"
+    (mouseleave)="currentThumbIndex = 0"
+    >
+        <!-- New and Sale Badges -->
+        <div class="absolute top-4 left-[15%] lg:left-[10%] flex flex-col gap-2 pointer-events-none z-10">
+            @if(isNew(product)) {
+                <ui-badge>New</ui-badge>
+            }
+            @if(product.discount > 0) {
+                <ui-badge>Sale</ui-badge>
+            }
+        </div>
+        <!-- Image -->
+        <ui-fader [images]="imagePaths" 
+            [class]="'w-3/4 ' + imgHeight"
+            [alt]="product.name" 
+            [activeIndex]="currentThumbIndex" />
+    </ui-nav-button>
+    <div class="w-full text-center">
+        <div class="grid grid-rows-2-to-1 grid-cols-1 justify-between lg:h-[6.5rem] p-2 lg:p-4"
+            [ngClass]="{'h-20 space-y-1.5 sm:space-y-2.5': variant === 'default', 'h-16 sm:h-20 space-y-0.5 sm:space-y-1 lg:space-y-2.5': variant === 'small'}">
+            <!-- Product Name -->
+            <ui-nav-button [href]="'/products/'+product.id">
+                <h3 class="{{titleSize}} font-semibold leading-tight tracking-tight line-clamp-2">{{product.name}}</h3>
+            </ui-nav-button>
+            <div class="flex gap-1 md:gap-4 justify-center items-center">
+                <!-- Product Categories -->
+                 @for(category of product.categories; track category; let i = $index) {
+                    <ui-nav-button [href]="'/collections/'+category">
+                        <span class="text-xs md:text-sm text-muted-foreground hover:underline">{{category}}</span>
+                    </ui-nav-button>
+                    @if(i + 1 != product.categories?.length) {
+                        <span>/</span>
+                    }
+                 }
+            </div>
+        </div>
+        <!-- Purchase Button & Price -->
+        <div class="flex justify-center lg:justify-normal items-center gap-12 lg:gap-20 p-2 lg:px-6 lg:py-3"
+            [ngClass]="{'pt-0': variant === 'small'}">
+            <ui-nav-button class="hidden sm:block w-1/3" button [href]="'/products/'+product.id">Purchase</ui-nav-button>
+            <div class="flex flex-col">
+                @if(product.discount > 0) {
+                    <p class="text-xs text-leading-foreground select-none line-through">{{formatCurrency(product.price)}}</p>
+                }
+                <p class="text-xs sm:text-base md:text-lg text-leading-foreground select-none">{{formatCurrency(currentPrice)}}</p>
+            </div>
+        </div>
+    </div>
+</ng-template>
 
 <!-- Horizontal card template -->
 <ng-template #horizontal>
     <!-- New and Sale Badges -->
     <div class="absolute top-4 left-[10%] lg:left-[5%] grid grid-cols-[repeat(2,max-content)] gap-4 pointer-events-none z-10">
-        <ui-badge *ngIf="isNew(product)">New</ui-badge>
-        <ui-badge *ngIf="product.discount > 0">Sale - {{(product.discount / product.price * 100).toFixed(0)}}%</ui-badge>
+        @if(isNew(product)) {
+            <ui-badge>New</ui-badge>
+        }
+        @if (product.discount > 0) {
+            <ui-badge>Sale - {{(product.discount / product.price * 100).toFixed(0)}}%</ui-badge>
+        }
     </div>
     <div class="w-1/2 text-right">
         <div class="grid grid-cols-1 justify-between space-y-1.5 h-1/2 lg:h-44 p-4">
             <div class="flex gap-4 justify-end items-center">
                 <!-- Product Categories -->
-                <ng-container *ngFor="let category of product.categories;index as i" >
+                 @for (category of product.categories; track category; let i = $index) {
                     <ui-nav-button [href]="'/collections/'+category">
                         <span class="text-xs sm:text-sm text-muted-foreground hover:underline">{{category}}</span>
                     </ui-nav-button>
-                    <span *ngIf="i + 1 != product.categories?.length">/</span>
-                </ng-container>
+                    @if(i + 1 != product.categories?.length) {
+                        <span>/</span>
+                    }
+                 }
             </div>
             <!-- Product Name -->
             <ui-nav-button [href]="'/products/'+product.id">
@@ -94,7 +115,9 @@
     </ui-nav-button>
     <!-- Product Price-->
     <p class="absolute flex flex-col items-center top-0 translate-y-1/2 right-[5%] text-xs sm:text-base md:text-lg text-leading-foreground p-1 px-2 border border-green rounded-lg select-none bg-background">
-        <span *ngIf="product.discount > 0" class="text-xs line-through">{{formatCurrency(product.price)}}</span>
+        @if (product.discount > 0) {
+            <span class="text-xs line-through">{{formatCurrency(product.price)}}</span>
+        }
         <span>{{formatCurrency(currentPrice)}}</span>
     </p>
 </ng-template>

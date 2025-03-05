@@ -1,5 +1,4 @@
 import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { InputDirective } from '../../../directives/UI/input.directive';
 import { ButtonDirective } from '../../../directives/UI/button.directive';
@@ -8,7 +7,7 @@ import { EmailService } from '../../../services/email.service';
 @Component({
   selector: 'app-orders',
   standalone: true,
-  imports: [CommonModule, FormsModule, InputDirective, ButtonDirective],
+  imports: [FormsModule, InputDirective, ButtonDirective],
   templateUrl: './orders.component.html',
 })
 export class OrdersComponent implements AfterViewInit {

@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { CustomerService } from '../../../services/customer.service';
@@ -15,7 +14,7 @@ import { asyncType, customerType } from '../../../types';
 @Component({
   selector: 'app-customers',
   standalone: true,
-  imports: [CommonModule, HeaderDirective, TableComponent],
+  imports: [HeaderDirective, TableComponent],
   templateUrl: './customers.component.html',
 })
 export class CustomersComponent {

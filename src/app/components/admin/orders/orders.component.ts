@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { BehaviorSubject } from 'rxjs';
 import { OrderService } from '../../../services/order.service';
 import {
@@ -15,7 +14,7 @@ import { asyncType, orderType } from '../../../types';
 @Component({
   selector: 'app-orders',
   standalone: true,
-  imports: [CommonModule, HeaderDirective, TableComponent],
+  imports: [HeaderDirective, TableComponent],
   templateUrl: './orders.component.html',
 })
 export class OrdersComponent {

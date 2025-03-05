@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { BehaviorSubject } from 'rxjs';
 import { ProductService } from '../../../services/product.service';
@@ -19,7 +18,7 @@ import { featherCheck, featherSlash } from '@ng-icons/feather-icons';
 @Component({
   selector: 'app-product',
   standalone: true,
-  imports: [CommonModule, HeaderDirective, NavButtonComponent, TableComponent],
+  imports: [HeaderDirective, NavButtonComponent, TableComponent],
   templateUrl: './products.component.html',
 })
 export class ProductsComponent {

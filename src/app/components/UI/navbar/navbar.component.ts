@@ -20,6 +20,7 @@ import { featherMenu } from '@ng-icons/feather-icons';
   providers: [provideIcons({ featherMenu })],
   template: `<ng-template #content><ng-content /></ng-template>
     <header
+      class="min-h-12"
       [ngStyle]="{
         '--navlink-bg': navlinkStyles.bg,
         '--navlink-text': navlinkStyles.text,
@@ -43,18 +44,17 @@ import { featherMenu } from '@ng-icons/feather-icons';
       </nav>
 
       <!-- Mobile Menu -->
-      <div
-        *ngIf="areWeOnAdmin"
-        class="block sm:hidden absolute top-[3%] right-[10%]"
-      >
+      @if(areWeOnAdmin) {
+      <div class="block sm:hidden absolute top-[3%] right-[10%]">
         <button class="relative flex z-20" (click)="openMobileMenu()">
           <ng-icon name="featherMenu" size="2rem" />
         </button>
+        @if(mobileMenuOpen === true) {
         <div
-          *ngIf="mobileMenuOpen === true"
           class="fixed top-0 left-0 w-full h-screen bg-[rgba(0,0,0,0.7)] flex justify-end z-20"
           (click)="closeMobileMenu()"
         ></div>
+        }
         <div
           class="fixed top-0 right-0 bg-background p-8 w-[75vw] h-screen z-30 transition-transform duration-300"
           [ngClass]="{
@@ -63,11 +63,14 @@ import { featherMenu } from '@ng-icons/feather-icons';
           }"
           (click)="$event.stopPropagation()"
         >
-          <div *ngIf="isMobile" class="flex flex-col gap-4 items-stretch">
+          @if(isMobile) {
+          <div class="flex flex-col gap-4 items-stretch">
             <ng-container *ngTemplateOutlet="content"></ng-container>
           </div>
+          }
         </div>
       </div>
+      }
     </header>`,
 })
 export class NavbarComponent implements AfterContentInit, OnDestroy {

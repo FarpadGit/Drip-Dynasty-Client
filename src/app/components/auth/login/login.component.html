@@ -10,7 +10,9 @@
                 name="username"
                 formControlName="username"
                 />
-            <div *ngIf="loginForm.controls.username.errors?.['required'] && loginForm.controls.username.touched" class="text-destructive">Username is required</div>
+            @if(loginForm.controls.username.errors?.['required'] && loginForm.controls.username.touched) {
+                <div class="text-destructive">Username is required</div>
+            }
             </div>
             <div class="space-y-2">
             <label class="ui-label" for="password">Password</label>
@@ -21,7 +23,9 @@
                 type="password"
                 formControlName="password"
             />
-            <div *ngIf="loginForm.controls.password.errors?.['required'] && loginForm.controls.password.touched" class="text-destructive">Please type in your password</div>
+            @if(loginForm.controls.password.errors?.['required'] && loginForm.controls.password.touched) {
+                <div class="text-destructive">Please type in your password</div>
+            }
             </div>
             <div class="flex gap-4">
                 <button class="ui-button p-4" variant="secondary" type="button" (click)="onCancel()">
@@ -34,5 +38,7 @@
             </div>
         </form>
     </div>
-    <div *ngIf="hasError" class="flex items-center justify-center w-full text-destructive">Unfortunately an error has occured on the server</div>
+    @if(hasError) {
+        <div class="flex items-center justify-center w-full text-destructive">Unfortunately an error has occured on the server</div>
+    }
 </div>
