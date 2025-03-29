@@ -10,7 +10,7 @@ import { Component } from '@angular/core';
     <div
       class="absolute flex items-center justify-center w-[calc(100%-4px)] h-[calc(100%-2px)] text-leading-foreground bg-background clippath"
     ></div>
-    <span class="relative z-10"><ng-content /></span>
+    <span class="relative z-10" data-test-badge-content><ng-content /></span>
   </div>`,
   styles: `.clippath { clip-path: polygon(16.1px 0, 0 50%, 0 100%, calc(100% - 16.1px) 100%, 100% 50%, 100% 0%); }`,
 })

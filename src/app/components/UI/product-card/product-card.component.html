@@ -21,7 +21,7 @@
     >
         <!-- New and Sale Badges -->
         <div class="absolute top-4 left-[15%] lg:left-[10%] flex flex-col gap-2 pointer-events-none z-10">
-            @if(isNew(product)) {
+            @if(isNew()) {
                 <ui-badge>New</ui-badge>
             }
             @if(product.discount > 0) {
@@ -39,13 +39,13 @@
             [ngClass]="{'h-20 space-y-1.5 sm:space-y-2.5': variant === 'default', 'h-16 sm:h-20 space-y-0.5 sm:space-y-1 lg:space-y-2.5': variant === 'small'}">
             <!-- Product Name -->
             <ui-nav-button [href]="'/products/'+product.id">
-                <h3 class="{{titleSize}} font-semibold leading-tight tracking-tight line-clamp-2">{{product.name}}</h3>
+                <h3 class="{{titleSize}} font-semibold leading-tight tracking-tight line-clamp-2" data-test-name>{{product.name}}</h3>
             </ui-nav-button>
             <div class="flex gap-1 md:gap-4 justify-center items-center">
                 <!-- Product Categories -->
                  @for(category of product.categories; track category; let i = $index) {
                     <ui-nav-button [href]="'/collections/'+category">
-                        <span class="text-xs md:text-sm text-muted-foreground hover:underline">{{category}}</span>
+                        <span class="text-xs md:text-sm text-muted-foreground hover:underline" data-test-category>{{category}}</span>
                     </ui-nav-button>
                     @if(i + 1 != product.categories?.length) {
                         <span>/</span>
@@ -59,9 +59,9 @@
             <ui-nav-button class="hidden sm:block w-1/3" button [href]="'/products/'+product.id">Purchase</ui-nav-button>
             <div class="flex flex-col">
                 @if(product.discount > 0) {
-                    <p class="text-xs text-leading-foreground select-none line-through">{{formatCurrency(product.price)}}</p>
+                    <p class="text-xs text-leading-foreground select-none line-through" data-test-old-price>{{formatCurrency(product.price)}}</p>
                 }
-                <p class="text-xs sm:text-base md:text-lg text-leading-foreground select-none">{{formatCurrency(currentPrice)}}</p>
+                <p class="text-xs sm:text-base md:text-lg text-leading-foreground select-none" data-test-price>{{formatCurrency(currentPrice)}}</p>
             </div>
         </div>
     </div>
@@ -71,7 +71,7 @@
 <ng-template #horizontal>
     <!-- New and Sale Badges -->
     <div class="absolute top-4 left-[10%] lg:left-[5%] grid grid-cols-[repeat(2,max-content)] gap-4 pointer-events-none z-10">
-        @if(isNew(product)) {
+        @if(isNew()) {
             <ui-badge>New</ui-badge>
         }
         @if (product.discount > 0) {
@@ -84,7 +84,7 @@
                 <!-- Product Categories -->
                  @for (category of product.categories; track category; let i = $index) {
                     <ui-nav-button [href]="'/collections/'+category">
-                        <span class="text-xs sm:text-sm text-muted-foreground hover:underline">{{category}}</span>
+                        <span class="text-xs sm:text-sm text-muted-foreground hover:underline" data-test-category>{{category}}</span>
                     </ui-nav-button>
                     @if(i + 1 != product.categories?.length) {
                         <span>/</span>
@@ -93,7 +93,7 @@
             </div>
             <!-- Product Name -->
             <ui-nav-button [href]="'/products/'+product.id">
-                <h3 class="{{titleSize}} font-semibold leading-tight tracking-tight line-clamp-3">{{product.name}}</h3>
+                <h3 class="{{titleSize}} font-semibold leading-tight tracking-tight line-clamp-3" data-test-name>{{product.name}}</h3>
             </ui-nav-button>
         </div>
         <!-- Purchase Button -->
@@ -116,8 +116,8 @@
     <!-- Product Price-->
     <p class="absolute flex flex-col items-center top-0 translate-y-1/2 right-[5%] text-xs sm:text-base md:text-lg text-leading-foreground p-1 px-2 border border-green rounded-lg select-none bg-background">
         @if (product.discount > 0) {
-            <span class="text-xs line-through">{{formatCurrency(product.price)}}</span>
+            <span class="text-xs line-through" data-test-old-price>{{formatCurrency(product.price)}}</span>
         }
-        <span>{{formatCurrency(currentPrice)}}</span>
+        <span  data-test-price>{{formatCurrency(currentPrice)}}</span>
     </p>
 </ng-template>

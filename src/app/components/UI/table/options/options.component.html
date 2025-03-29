@@ -12,13 +12,13 @@
       [ngClass]="{'top-[10px]': side === 'top', 'bottom-[10px]': side === 'bottom'}">
       <!-- boxed feedback message if option failed -->
       @if(getErrorMessage() != undefined) {
-        <div class="absolute top-0 -left-[7.5rem] w-28 p-4 bg-white border border-[#DDDDDD] rounded text-destructive pointer-events-none z-50">
+        <div class="absolute top-0 -left-[7.5rem] w-28 p-4 bg-white border border-[#DDDDDD] rounded text-destructive pointer-events-none z-50" data-test-error>
           {{getErrorMessage()}}
         </div>
       }
       <!-- boxed confirmation dialog with yes/no buttons -->
       @if (dialogOpen) {
-        <div class="absolute top-0 -translate-x-60 flex flex-col w-56 p-4 bg-white border border-[#DDDDDD] rounded z-50 cursor-default">
+        <div class="absolute top-0 -translate-x-60 flex flex-col w-56 p-4 bg-white border border-[#DDDDDD] rounded z-50 cursor-default" data-test-dialog>
         {{getDialogMessage(dialogOpen)}}
         <div class="flex justify-around">
           <button class="ui-button" variant="primary" (click)="onDialogConfirm(dialogOpen)">Yes</button>
@@ -27,11 +27,12 @@
       </div>
       }
       <!-- clickable option element -->
-      @for (option of options; track trackby) {
+      @for (option of options; track option.id) {
         <li class="relative leading-3 hover:has-[button:enabled]:bg-[#7898B3] hover:rounded hover:has-[button:enabled]:text-white focus:bg-[#245A88] focus:rounded focus:has-[button:enabled]:text-white" >
           <button [class]="'flex justify-center w-full py-3 px-0 disabled:line-through disabled:opacity-50 ' + option.styles" 
                   (click)="onSelect(option, $event)" 
-                  [disabled]="option.error != undefined">
+                  [disabled]="option.error != undefined" 
+                  data-test-label>
             {{option.label}}
           </button>
         </li>

@@ -3,10 +3,10 @@
     <div class="flex flex-col text-justify grow">
         <div class="w-full my-6 text-center">
             @if(!error) {
-                <p class="text-sm sm:text-base">Your order has been successfully processed. You should recieve an email to the address you provided shortly. Order id: {{orderId}}</p>
+                <p class="text-sm sm:text-base" id="message">Your order has been successfully processed. You should recieve an email to the address you provided shortly. Order id: {{orderId}}</p>
             }
              @else {
-                 <p class="text-sm sm:text-base">We're afraid an unknown error has occured while processing your purchase. We suggest trying again at a later time.</p>
+                 <p class="text-sm sm:text-base" id="message">We're afraid an unknown error has occured while processing your purchase. We suggest trying again at a later time.</p>
              }
         </div>
     </div>
