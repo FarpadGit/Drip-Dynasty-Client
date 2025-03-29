@@ -101,6 +101,8 @@ export class ProductDetailsComponent implements OnInit {
   }
 
   handlePaypalError() {
-    this.router.navigate(['/products/purchase-processed']);
+    this.router.navigate(['/products/purchase-processed'], {
+      info: { error: 'paypal error' },
+    });
   }
 }
