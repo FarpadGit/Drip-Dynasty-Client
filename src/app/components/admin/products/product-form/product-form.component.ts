@@ -108,7 +108,6 @@ export class ProductFormComponent implements OnInit, OnDestroy {
 
   userId: string | null = null;
   routeParamSub: Subscription | null = null;
-  valueChangeSub: Subscription | null = null;
   product: productType | null = null;
 
   constructor(
@@ -161,7 +160,6 @@ export class ProductFormComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.routeParamSub?.unsubscribe();
-    this.valueChangeSub?.unsubscribe();
     this.editor.destroy();
   }
 
