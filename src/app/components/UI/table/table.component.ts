@@ -1,14 +1,13 @@
 import {
   Component,
+  effect,
   EventEmitter,
   HostListener,
   Input,
-  OnDestroy,
-  OnInit,
   Output,
+  signal,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { BehaviorSubject, Subscription } from 'rxjs';
 import { OptionsComponent } from './options/options.component';
 import { NgIconComponent } from '@ng-icons/core';
 import { animate, style, transition, trigger } from '@angular/animations';
@@ -21,7 +20,7 @@ export type tableRowType = {
 
 export type tableOptionType = {
   id: string;
-  label: string | false;
+  label: string;
   styles?: string;
   error?: string;
   dialog?: string;
@@ -52,34 +51,38 @@ export type responseObjectType =
     ]),
   ],
 })
-export class TableComponent implements OnInit, OnDestroy {
-  @Input('headers') _headers: (
-    | string
-    | { label: string; width: number }
-    | null
-  )[] = [];
+export class TableComponent {
+  @Input() headers: (string | { label: string; width: number } | null)[] = [];
   @Input() data: tableRowType[] = [];
   @Input() icons: tableIconsType[] = [];
   @Input() isLoading: boolean = false;
   @Output() onUserAction = new EventEmitter<{
     itemId: string;
     option: tableOptionType;
-    response: BehaviorSubject<responseObjectType | null>;
   }>();
 
   private optionsOpen: string | false = false;
   openDialogId: string | false = false;
-  private actionResponse = new BehaviorSubject<responseObjectType | null>(null);
-  private responseSub = new Subscription();
+  actionResponse = signal<responseObjectType | null>(null);
 
-  get headers() {
-    return this._headers.map((header) =>
+  constructor() {
+    effect(() => {
+      if (!this.actionResponse()) return;
+      if (this.actionResponse() === 'ok') {
+        this.optionsOpen = false;
+        this.actionResponse.set(null);
+      }
+    });
+  }
+
+  get headerLabels() {
+    return this.headers.map((header) =>
       header == null || typeof header === 'string' ? header : header.label
     );
   }
 
   headerWidth(index: number) {
-    const header = this._headers[index];
+    const header = this.headers[index];
     const className =
       header == null || typeof header === 'string'
         ? undefined
@@ -110,19 +113,6 @@ export class TableComponent implements OnInit, OnDestroy {
     }
   }
 
-  ngOnInit(): void {
-    this.responseSub = this.actionResponse.subscribe((res) => {
-      if (!res) return;
-      if (res === 'ok') {
-        this.optionsOpen = false;
-      }
-    });
-  }
-
-  ngOnDestroy(): void {
-    this.responseSub.unsubscribe();
-  }
-
   // gets the list of options for given row, mapping simple string shorthand values to the canonical tableOptionType form
   getOptions(id: string) {
     const options = this.data.find((data) => data.id === id)?.options || [];
@@ -136,7 +126,7 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   isOptionLast(id: string) {
-    if (this.data.length <= 0) return false;
+    if (this.data.length < 1) return false;
     return id === this.data[this.data.length - 1].id;
   }
 
@@ -148,11 +138,6 @@ export class TableComponent implements OnInit, OnDestroy {
     this.onUserAction.emit({
       itemId,
       option,
-      response: this.actionResponse,
     });
-  }
-
-  trackby(index: number, item: tableRowType) {
-    return item.id;
   }
 }

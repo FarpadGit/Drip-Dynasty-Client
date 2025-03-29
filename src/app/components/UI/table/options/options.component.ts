@@ -61,8 +61,4 @@ export class OptionsComponent {
   getDialogMessage(id: string) {
     return this.options.find((o) => o.id === id)?.dialog;
   }
-
-  trackby(index: number, item: tableOptionType) {
-    return item.error;
-  }
 }

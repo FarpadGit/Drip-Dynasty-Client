@@ -1,8 +1,6 @@
-import { Component } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { Component, effect, ViewChild } from '@angular/core';
 import { CustomerService } from '../../../services/customer.service';
 import {
-  responseObjectType,
   TableComponent,
   tableOptionType,
   tableRowType,
@@ -18,6 +16,7 @@ import { asyncType, customerType } from '../../../types';
   templateUrl: './customers.component.html',
 })
 export class CustomersComponent {
+  @ViewChild('table') table!: TableComponent;
   private customers: asyncType<customerType[]> = {
     isLoading: false,
     hasError: false,
@@ -25,17 +24,19 @@ export class CustomersComponent {
   };
 
   constructor(private customerService: CustomerService) {
-    this.customerService.getCustomers().subscribe((customers) => {
-      this.customers = customers;
+    customerService.fetchCustomers();
+
+    effect(() => {
+      this.customers = this.customerService.getCustomers();
     });
   }
 
   get isLoading() {
-    return false;
+    return this.customers.isLoading;
   }
 
   get hasError() {
-    return false;
+    return this.customers.hasError;
   }
 
   get headers() {
@@ -67,14 +68,12 @@ export class CustomersComponent {
   handleSelectedOption({
     itemId: customerId,
     option,
-    response,
   }: {
     itemId: string;
     option: tableOptionType;
-    response: BehaviorSubject<responseObjectType | null>;
   }) {
     if (option.id === 'delete') {
-      response.next('ok');
+      this.table.actionResponse.set('ok');
       this.customerService.deleteCustomer(customerId);
     }
   }

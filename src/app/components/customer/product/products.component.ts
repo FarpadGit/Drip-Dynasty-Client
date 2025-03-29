@@ -1,4 +1,4 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component, effect, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
@@ -36,7 +36,6 @@ export class ProductsComponent implements OnDestroy {
 
   routeParamSub: Subscription | null;
   queryParamSub: Subscription | null;
-  productSub: Subscription | null;
 
   constructor(
     private productService: ProductService,
@@ -61,31 +60,30 @@ export class ProductsComponent implements OnDestroy {
       debounce(() => this.fetchProducts(), 0);
     });
 
-    this.productSub = this.productService.productsSubject.subscribe(
-      (products) => {
-        if (firstRun) return;
+    effect(async () => {
+      if (firstRun) return;
 
-        this.activeProducts = {
-          isLoading: products.isLoading,
-          hasError: products.hasError,
-          value: products.value?.filter((p) => p.isActive) ?? null,
-        };
-        if (this.activeProducts.value?.length === 0)
-          this.router.navigate([], { queryParams: null });
-      }
-    );
+      const products = this.productService.getProducts();
+
+      this.activeProducts = {
+        isLoading: products.isLoading,
+        hasError: products.hasError,
+        value: products.value?.filter((p) => p.isActive) ?? null,
+      };
+      if (this.activeProducts.value?.length === 0)
+        this.router.navigate([], { queryParams: null });
+    });
 
     firstRun = false;
   }
 
   fetchProducts() {
-    this.productService.getProducts(this.category ?? 'all', this.page);
+    this.productService.fetchProducts(this.category ?? 'all', this.page);
   }
 
   ngOnDestroy(): void {
     this.routeParamSub?.unsubscribe();
     this.queryParamSub?.unsubscribe();
-    this.productSub?.unsubscribe();
   }
 
   get isLoading() {

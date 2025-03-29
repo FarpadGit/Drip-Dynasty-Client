@@ -1,8 +1,6 @@
-import { Component } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { Component, effect, ViewChild } from '@angular/core';
 import { OrderService } from '../../../services/order.service';
 import {
-  responseObjectType,
   TableComponent,
   tableOptionType,
   tableRowType,
@@ -18,6 +16,7 @@ import { asyncType, orderType } from '../../../types';
   templateUrl: './orders.component.html',
 })
 export class OrdersComponent {
+  @ViewChild('table') table!: TableComponent;
   private orders: asyncType<orderType[]> = {
     isLoading: false,
     hasError: false,
@@ -25,17 +24,18 @@ export class OrdersComponent {
   };
 
   constructor(private orderService: OrderService) {
-    this.orderService.getOrders().subscribe((orders) => {
-      this.orders = orders;
+    orderService.fetchOrders();
+    effect(() => {
+      this.orders = this.orderService.getOrders();
     });
   }
 
   get isLoading() {
-    return false;
+    return this.orders.isLoading;
   }
 
   get hasError() {
-    return false;
+    return this.orders.hasError;
   }
 
   get headers() {
@@ -66,14 +66,12 @@ export class OrdersComponent {
   handleSelectedOption({
     itemId: orderId,
     option,
-    response,
   }: {
     itemId: string;
     option: tableOptionType;
-    response: BehaviorSubject<responseObjectType | null>;
   }) {
     if (option.id === 'delete') {
-      response.next('ok');
+      this.table.actionResponse.set('ok');
       this.orderService.deleteOrder(orderId);
     }
   }

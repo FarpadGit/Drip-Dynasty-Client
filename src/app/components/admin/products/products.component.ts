@@ -1,9 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, effect, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { BehaviorSubject } from 'rxjs';
 import { ProductService } from '../../../services/product.service';
 import {
-  responseObjectType,
   TableComponent,
   tableIconsType,
   tableOptionType,
@@ -22,6 +20,7 @@ import { featherCheck, featherSlash } from '@ng-icons/feather-icons';
   templateUrl: './products.component.html',
 })
 export class ProductsComponent {
+  @ViewChild('table') table!: TableComponent;
   private products: asyncType<productType[]> = {
     isLoading: false,
     hasError: false,
@@ -31,7 +30,10 @@ export class ProductsComponent {
   productTableCells: tableRowType[] = [];
 
   constructor(private productService: ProductService, private router: Router) {
-    this.productService.getProducts('all').subscribe((products) => {
+    this.productService.fetchProducts('all');
+
+    effect(() => {
+      const products = productService.getProducts();
       this.products.hasError = products.hasError;
       this.products.isLoading = products.isLoading;
       this.products.value = products.value ? [...products.value] : [];
@@ -108,34 +110,28 @@ export class ProductsComponent {
   handleSelectedOption({
     itemId: productId,
     option,
-    response,
   }: {
     itemId: string;
     option: tableOptionType;
-    response: BehaviorSubject<responseObjectType | null>;
   }) {
     if (option.id === 'edit') {
-      response.next('ok');
+      this.table.actionResponse.set('ok');
       this.router.navigate([`admin/products/${productId}/edit`]);
     }
     if (option.id === 'toggleActivate') {
-      this.tryToggleProduct(productId, option, response);
+      this.tryToggleProduct(productId, option);
     }
     if (option.id === 'delete') {
-      response.next('ok');
+      this.table.actionResponse.set('ok');
       this.productService.deleteProduct(productId);
     }
   }
 
-  async tryToggleProduct(
-    productId: string,
-    option: tableOptionType,
-    response: BehaviorSubject<responseObjectType | null>
-  ) {
+  async tryToggleProduct(productId: string, option: tableOptionType) {
     const canToggle = await this.productService.toggleProductActivation(
       productId
     );
-    if (canToggle) response.next('ok');
+    if (canToggle) this.table.actionResponse.set('ok');
     else option.error = 'You cannot activate a product with no images';
   }
 }

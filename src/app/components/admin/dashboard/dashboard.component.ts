@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, effect } from '@angular/core';
 import { APIService } from '../../../services/API/api.service';
 import { ProductService } from '../../../services/product.service';
 import { CustomerService } from '../../../services/customer.service';
@@ -59,15 +59,19 @@ export class DashboardComponent {
     private orderService: OrderService,
     private APIService: APIService
   ) {
-    this.productService.getProducts('all').subscribe((products) => {
-      this.products = products;
+    this.productService.fetchProducts('all');
+    this.customerService.fetchCustomers();
+    this.orderService.fetchOrders();
+
+    effect(() => {
+      this.products = this.productService.getProducts();
       this.countActiveProducts();
     });
-    this.customerService.getCustomers().subscribe((customers) => {
-      this.customers = customers;
+    effect(() => {
+      this.customers = this.customerService.getCustomers();
     });
-    this.orderService.getOrders().subscribe((sales) => {
-      this.sales = sales;
+    effect(() => {
+      this.sales = this.orderService.getOrders();
       this.calculateSales();
     });
   }

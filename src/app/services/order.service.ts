@@ -1,5 +1,4 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { Injectable, signal } from '@angular/core';
 import { asyncType, orderType } from '../types';
 import { OrderAPIService } from './API/order-api.service';
 
@@ -7,7 +6,7 @@ import { OrderAPIService } from './API/order-api.service';
   providedIn: 'root',
 })
 export class OrderService {
-  private ordersSubject = new BehaviorSubject<asyncType<orderType[]>>({
+  private ordersSignal = signal<asyncType<orderType[]>>({
     isLoading: false,
     hasError: false,
     value: null,
@@ -16,21 +15,21 @@ export class OrderService {
   constructor(private APIService: OrderAPIService) {}
 
   async fetchOrders() {
-    this.ordersSubject.next({
-      ...this.ordersSubject.value,
+    this.ordersSignal.update((prev) => ({
+      ...prev,
       isLoading: true,
-    });
+    }));
 
     const response = await this.APIService.getOrders();
 
     if (!response.error) {
-      this.ordersSubject.next({
+      this.ordersSignal.set({
         isLoading: false,
         hasError: false,
         value: response as orderType[],
       });
     } else {
-      this.ordersSubject.next({
+      this.ordersSignal.set({
         isLoading: false,
         hasError: true,
         value: null,
@@ -39,8 +38,7 @@ export class OrderService {
   }
 
   getOrders() {
-    this.fetchOrders();
-    return this.ordersSubject;
+    return this.ordersSignal();
   }
 
   async deleteOrder(id: string) {

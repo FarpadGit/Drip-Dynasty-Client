@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component, effect, Inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ProductService } from '../../../services/product.service';
 import { ProductCardComponent } from '../../UI/product-card/product-card.component';
@@ -63,14 +63,15 @@ export class HomeComponent {
     @Inject('instance1') private newestProductsService: ProductService,
     @Inject('instance2') private mostPopularProductsService: ProductService
   ) {
-    this.newestProductsService.getProducts('newest').subscribe((products) => {
-      this.newestProducts = products;
+    this.newestProductsService.fetchProducts('newest');
+    this.mostPopularProductsService.fetchProducts('popular');
+
+    effect(() => {
+      this.newestProducts = this.newestProductsService.getProducts();
     });
 
-    this.mostPopularProductsService
-      .getProducts('popular')
-      .subscribe((products) => {
-        this.mostPopularProducts = products;
-      });
+    effect(() => {
+      this.mostPopularProducts = this.mostPopularProductsService.getProducts();
+    });
   }
 }

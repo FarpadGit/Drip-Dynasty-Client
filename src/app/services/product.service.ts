@@ -1,5 +1,4 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { Injectable, signal } from '@angular/core';
 import { asyncType, paginatedProductType, productType } from '../types';
 import { ProductAPIService } from './API/product-api.service';
 
@@ -7,7 +6,7 @@ import { ProductAPIService } from './API/product-api.service';
   providedIn: 'root',
 })
 export class ProductService {
-  productsSubject = new BehaviorSubject<asyncType<productType[]>>({
+  private productsSignal = signal<asyncType<productType[]>>({
     isLoading: false,
     hasError: false,
     value: null,
@@ -21,11 +20,11 @@ export class ProductService {
     query: 'all' | 'newest' | 'popular' | string = 'all',
     page?: number
   ) {
-    this.productsSubject.next({
+    this.productsSignal.update((prev) => ({
+      ...prev,
       isLoading: true,
       hasError: false,
-      value: this.productsSubject.value.value,
-    });
+    }));
 
     let response,
       paginated = false;
@@ -51,7 +50,7 @@ export class ProductService {
     }
 
     if (response.error) {
-      this.productsSubject.next({
+      this.productsSignal.set({
         isLoading: false,
         hasError: true,
         value: null,
@@ -60,7 +59,7 @@ export class ProductService {
     }
 
     if (!paginated) {
-      this.productsSubject.next({
+      this.productsSignal.set({
         isLoading: false,
         hasError: false,
         value: response as productType[],
@@ -71,7 +70,7 @@ export class ProductService {
         hasPrev: response.hasPrev,
         totalPages: response.totalPages,
       };
-      this.productsSubject.next({
+      this.productsSignal.set({
         isLoading: false,
         hasError: false,
         value: response.products,
@@ -79,9 +78,8 @@ export class ProductService {
     }
   }
 
-  getProducts(query: 'all' | 'newest' | 'popular' | string, page?: number) {
-    this.fetchProducts(query, page);
-    return this.productsSubject;
+  getProducts() {
+    return this.productsSignal();
   }
 
   async getProduct(id: string) {

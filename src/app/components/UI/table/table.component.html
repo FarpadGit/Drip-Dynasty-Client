@@ -4,7 +4,7 @@
         <!-- Table Head -->
         <thead class="[&_tr]:border-b">
             <tr class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
-                @for (header of headers; track header; let i = $index) {
+                @for (header of headerLabels; track header; let i = $index) {
                     <th class="h-12 px-4 text-center justify-center font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0"
                     [ngStyle]="{'width': headerWidth(i)}">{{header ?? ""}}</th>
                 }
@@ -12,7 +12,7 @@
         </thead>
         <!-- Table Body -->
         <tbody class="[&_tr:last-child]:border-0">
-            @for (datarow of data; track trackby; let i = $index) {
+            @for (datarow of data; track datarow.id; let i = $index) {
                 <tr class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
                     @for (datacell of datarow.cells; track datacell) {
                         <td class="relative p-4 align-middle text-center [&:has([role=checkbox])]:pr-0">
@@ -56,7 +56,7 @@
             <!-- fallback cell -->
              @if ((!data || data.length === 0) && !isLoading) {
                 <tr class="text-center">
-                    <td [colSpan]="headers.length">This table is currently empty</td>
+                    <td [colSpan]="headerLabels.length">This table is currently empty</td>
                 </tr>
              }
         </tbody>

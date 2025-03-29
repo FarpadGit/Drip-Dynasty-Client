@@ -1,5 +1,4 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { Injectable, signal } from '@angular/core';
 import { asyncType, customerType } from '../types';
 import { CustomerAPIService } from './API/customer-api.service';
 
@@ -7,7 +6,7 @@ import { CustomerAPIService } from './API/customer-api.service';
   providedIn: 'root',
 })
 export class CustomerService {
-  private customersSubject = new BehaviorSubject<asyncType<customerType[]>>({
+  private customersSignal = signal<asyncType<customerType[]>>({
     isLoading: false,
     hasError: false,
     value: null,
@@ -16,21 +15,21 @@ export class CustomerService {
   constructor(private APIService: CustomerAPIService) {}
 
   async fetchCustomers() {
-    this.customersSubject.next({
-      ...this.customersSubject.value,
+    this.customersSignal.update((prev) => ({
+      ...prev,
       isLoading: true,
-    });
+    }));
 
     const response = await this.APIService.getCustomers();
 
     if (!response.error) {
-      this.customersSubject.next({
+      this.customersSignal.set({
         isLoading: false,
         hasError: false,
         value: response as customerType[],
       });
     } else {
-      this.customersSubject.next({
+      this.customersSignal.set({
         isLoading: false,
         hasError: true,
         value: null,
@@ -39,8 +38,7 @@ export class CustomerService {
   }
 
   getCustomers() {
-    this.fetchCustomers();
-    return this.customersSubject;
+    return this.customersSignal();
   }
 
   async deleteCustomer(id: string) {
