@@ -5,35 +5,44 @@
 
 <div class="mt-[37.5vh] lg:mt-[30vh] mb-[52.5vh] lg:mb-[50vh] flex justify-center">
   <div class="relative animate-entry-main">
-    <h1 class="relative font-Steps text-4xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl select-none glitch text-center" data-title="Drip Dynasty">Drip Dynasty</h1>
+    <h1 class="relative font-Steps text-4xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl select-none text-center" 
+        [ngClass]="{'glitch': titleGlitchEffect}"
+        (mouseenter)="titleGlitchEffect = true"
+        (mouseleave)="titleGlitchEffect = false"
+        data-title="Drip Dynasty">
+          Drip Dynasty
+    </h1>
   </div>
 </div>
 
 <!-- New Arrivals Section -->
  @if(!newestProducts.isLoading && !newestProducts.hasError) {
   <ui-section-head side="left">New Arrivals</ui-section-head>
-  <div class="flex flex-col xl:flex-row justify-center items-center xl:items-end gap-6 xl:gap-4 mb-8 md:overflow-x-auto">
-    <div class="flex flex-col gap-6">
-      <ui-product-card [product]="newestProducts.value![0]" variant="horizontal" class="drop-shadow-green-dark row-span-2"></ui-product-card>
-      <ui-separator color="orange" class="hidden xl:block h-8 mt-10 -scale-x-100"/>
-    </div>
-    <div class="flex gap-4">
-      <div class="flex flex-col justify-end gap-2">
-        <ui-product-card [product]="newestProducts.value![1]" variant="small" class="drop-shadow-green-dark"></ui-product-card>
-        <ui-separator color="orange" class="block xl:hidden h-8 lg:h-20 -scale-x-100"/>
+  @if(newestProducts.value !== null) {
+    <div class="flex flex-col xl:flex-row justify-center items-center xl:items-end gap-6 xl:gap-4 mb-8 md:overflow-x-auto">
+      <div class="flex flex-col gap-6">
+        <ui-product-card [product]="newestProducts.value[0]" variant="horizontal" class="drop-shadow-green-dark row-span-2"></ui-product-card>
+        <ui-separator color="orange" class="hidden xl:block h-8 mt-10 -scale-x-100"/>
       </div>
-      <ui-product-card [product]="newestProducts.value![2]" class="drop-shadow-green-dark"></ui-product-card>
+      <div class="flex gap-4">
+        <div class="flex flex-col justify-end gap-2">
+          <ui-product-card [product]="newestProducts.value[1]" variant="small" class="drop-shadow-green-dark"></ui-product-card>
+          <ui-separator color="orange" class="block xl:hidden h-8 lg:h-20 -scale-x-100"/>
+        </div>
+        <ui-product-card [product]="newestProducts.value[2]" class="drop-shadow-green-dark"></ui-product-card>
+      </div>
     </div>
-  </div>
-  <ui-slider [animSpeed]="3">
-    @for(product of newestProducts.value?.slice(3); track product.id) {
-      <ui-product-card [product]="product" variant="small" class="drop-shadow-green-dark keen-slider__slide"></ui-product-card>
-    }
-  </ui-slider>
- }
- @else {
+  
+    <ui-slider [animSpeed]="3">
+      @for(product of newestProducts.value.slice(3); track product.id) {
+        <ui-product-card [product]="product" variant="small" class="drop-shadow-green-dark keen-slider__slide"></ui-product-card>
+      }
+    </ui-slider>
+  }
+}
+@else {
   <ng-container *ngTemplateOutlet="ErrorOrLoading; context:newestProducts"></ng-container>
- }
+}
 
 <!-- Men & Women -->
 <div class="flex flex-col lg:flex-row gap-8 h-screen w-full my-8">
@@ -48,28 +57,31 @@
 <!-- Best Selling Section -->
  @if(!mostPopularProducts.isLoading && !mostPopularProducts.hasError) {
   <ui-section-head side="right">Best selling</ui-section-head>
-  <div class="flex flex-col xl:flex-row justify-center items-center xl:items-end gap-6 xl:gap-4 mb-8 md:overflow-x-auto">
-    <div class="flex gap-4">
-      <ui-product-card [product]="mostPopularProducts.value![2]" class="drop-shadow-green-dark"></ui-product-card>
-      <div class="flex flex-col justify-end gap-2">
-        <ui-product-card [product]="mostPopularProducts.value![1]" variant="small" class="drop-shadow-green-dark"></ui-product-card>
-        <ui-separator color="orange" class="block xl:hidden h-8 lg:h-20 -scale-x-100"/>
+  @if(mostPopularProducts.value !== null){  
+    <div class="flex flex-col xl:flex-row justify-center items-center xl:items-end gap-6 xl:gap-4 mb-8 md:overflow-x-auto">
+      <div class="flex gap-4">
+        <ui-product-card [product]="mostPopularProducts.value[2]" class="drop-shadow-green-dark"></ui-product-card>
+        <div class="flex flex-col justify-end gap-2">
+          <ui-product-card [product]="mostPopularProducts.value[1]" variant="small" class="drop-shadow-green-dark"></ui-product-card>
+          <ui-separator color="orange" class="block xl:hidden h-8 lg:h-20 -scale-x-100"/>
+        </div>
+      </div>
+      <div class="flex flex-col gap-6">
+        <ui-product-card [product]="mostPopularProducts.value[0]" variant="horizontal" class="drop-shadow-green-dark row-span-2"></ui-product-card>
+        <ui-separator color="orange" class="hidden xl:block h-8 mt-10 -scale-x-100"/>
       </div>
     </div>
-    <div class="flex flex-col gap-6">
-      <ui-product-card [product]="mostPopularProducts.value![0]" variant="horizontal" class="drop-shadow-green-dark row-span-2"></ui-product-card>
-      <ui-separator color="orange" class="hidden xl:block h-8 mt-10 -scale-x-100"/>
-    </div>
-  </div>
-  <ui-slider [animSpeed]="-3">
-    @for(product of mostPopularProducts.value?.slice(3); track product.id) {
-      <ui-product-card [product]="product" variant="small" class="drop-shadow-green-dark keen-slider__slide"></ui-product-card>
-    }
-  </ui-slider>
- }
- @else {
+  
+    <ui-slider [animSpeed]="-3">
+      @for(product of mostPopularProducts.value.slice(3); track product.id) {
+        <ui-product-card [product]="product" variant="small" class="drop-shadow-green-dark keen-slider__slide"></ui-product-card>
+      }
+    </ui-slider>
+  }
+}
+@else {
   <ng-container *ngTemplateOutlet="ErrorOrLoading; context:mostPopularProducts"></ng-container>
- }
+}
 
 <!-- Category List -->
 <ui-section-head color="orange">Browse our catalog</ui-section-head>

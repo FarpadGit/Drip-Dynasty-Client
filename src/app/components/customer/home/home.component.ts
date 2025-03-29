@@ -33,6 +33,7 @@ import { asyncType, productType } from '../../../types';
   styleUrl: './home.component.scss',
 })
 export class HomeComponent {
+  titleGlitchEffect: boolean = true;
   newestProducts: asyncType<productType[]> = {
     isLoading: false,
     hasError: false,
