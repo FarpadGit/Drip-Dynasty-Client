@@ -68,6 +68,7 @@ svg circle {
     font-size: 18pt;
     font-family: var(--raitor);
     text-align: center;
+    user-select: none;
     transition: opacity 1s ease;
 
     &.hide {
