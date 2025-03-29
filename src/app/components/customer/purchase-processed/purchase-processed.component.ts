@@ -13,8 +13,7 @@ export class PurchaseProcessedComponent {
 
   constructor(private router: Router) {
     const extrainfo: any = this.router.getCurrentNavigation()?.extras.info;
-    if (extrainfo.error) this.error = true;
-    else
-      this.orderId = this.router.getCurrentNavigation()?.extras.info as string;
+    if (!extrainfo || extrainfo.error) this.error = true;
+    else this.orderId = extrainfo as string;
   }
 }
