@@ -60,7 +60,7 @@ export class ProductCardComponent {
     return this.product.imagePaths.slice(0, 2);
   }
 
-  isNew(product: productType) {
-    return product.createdSince < 7 * 24 * 60 * 60 * 1000;
+  isNew() {
+    return this.product.createdSince < 7 * 24 * 60 * 60 * 1000;
   }
 }
