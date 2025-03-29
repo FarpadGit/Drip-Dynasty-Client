@@ -1,0 +1,57 @@
+[
+    {
+      "id": "product1ID",
+      "name": "product1",
+      "description": "description1",
+      "categories": ["category1"],
+      "price": 1,
+      "isActive": true,
+      "createdSince": 0,
+      "discount": 0,
+      "imagePaths": ["assets/fallback.jpg"]
+    },
+    {
+      "id": "product2ID",
+      "name": "product2",
+      "description": "description2",
+      "categories": ["category2", "category3"],
+      "price": 10,
+      "isActive": false,
+      "createdSince": 0,
+      "discount": 0,
+      "imagePaths": ["assets/fallback.jpg"]
+    },
+    {
+      "id": "product3ID",
+      "name": "product3",
+      "description": "description3",
+      "categories": ["category1"],
+      "price": 100,
+      "isActive": true,
+      "createdSince": 864000000,
+      "discount": 10,
+      "imagePaths": ["assets/fallback.jpg"]
+    },
+    {
+      "id": "product4ID",
+      "name": "product4",
+      "description": "description4",
+      "categories": ["category4", "category5", "category6"],
+      "price": 1000,
+      "isActive": true,
+      "createdSince": 86400000,
+      "discount": 0,
+      "imagePaths": ["assets/fallback.jpg"]
+    },
+    {
+      "id": "product5ID",
+      "name": "product5",
+      "description": "description5",
+      "categories": ["category2", "category7"],
+      "price": 10000,
+      "isActive": false,
+      "createdSince": 0,
+      "discount": 100,
+      "imagePaths": ["assets/fallback.jpg"]
+    }
+]

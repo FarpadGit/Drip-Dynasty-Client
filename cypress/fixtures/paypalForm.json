@@ -1,0 +1,13 @@
+{
+    "credit-card-number": "4355808488449488",
+    "expiry-date": "12/29",
+    "credit-card-security": "222",
+    "familyName": "Teszt",
+    "givenName": "Tamás",
+    "city": "Budapest",
+    "address": "Teszt sugárút 1",
+    "postcode": "1234",
+    "phone": "301234567",
+    "email": "fake_customer@email.com"
+}
+ 
