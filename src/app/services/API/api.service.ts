@@ -1,10 +1,12 @@
 import { Injectable } from '@angular/core';
 import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
+import { EnvService } from '../env.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class APIService {
+  constructor(private process: EnvService) {}
   private errorFn = (error: AxiosError) => {
     let errorMessage = null;
     switch (error.response?.status) {
@@ -24,7 +26,7 @@ export class APIService {
   };
 
   private callAxios = axios.create({
-    baseURL: import.meta.env['NG_APP_SERVER_URL'],
+    baseURL: this.process.env['NG_APP_SERVER_URL'],
     withCredentials: true,
   });
 

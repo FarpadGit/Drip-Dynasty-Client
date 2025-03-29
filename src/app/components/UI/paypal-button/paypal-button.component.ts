@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { PaypalApiService } from '../../../services/API/paypal-api.service';
 import { NgxPayPalModule, IPayPalConfig } from 'ngx-paypal';
+import { EnvService } from '../../../services/env.service';
 
 @Component({
   selector: 'ui-paypal-button',
@@ -18,12 +19,15 @@ export class PaypalButtonComponent implements OnInit {
   }>();
   @Output() onFailure = new EventEmitter<void>();
 
-  constructor(private APIService: PaypalApiService) {}
+  constructor(
+    private APIService: PaypalApiService,
+    private process: EnvService
+  ) {}
 
   ngOnInit() {
     this.payPalConfig = {
       currency: 'HUF',
-      clientId: import.meta.env['NG_APP_PAYPAL_CLIENT_ID'],
+      clientId: this.process.env['NG_APP_PAYPAL_CLIENT_ID'],
       // createOrderOnClient: (data: any) =>
       //   <ICreateOrderRequest>{
       //     intent: 'CAPTURE',

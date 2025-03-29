@@ -10,6 +10,7 @@ import { CatalogButtonComponent } from '../../UI/catalog-button.component';
 import { NavButtonComponent } from '../../UI/nav-button.component';
 import { FaderComponent } from '../../UI/fader.component';
 import { asyncType, productType } from '../../../types';
+import { EnvService } from '../../../services/env.service';
 
 @Component({
   selector: 'app-home',
@@ -45,12 +46,12 @@ export class HomeComponent {
     value: null,
   };
   categoryImages = [
-    import.meta.env['NG_APP_SERVER_URL'] + '/images/collections/all.jpg',
-    import.meta.env['NG_APP_SERVER_URL'] + '/images/collections/jackets.jpg',
-    import.meta.env['NG_APP_SERVER_URL'] + '/images/collections/shirts.jpg',
-    import.meta.env['NG_APP_SERVER_URL'] + '/images/collections/tops.jpg',
-    import.meta.env['NG_APP_SERVER_URL'] + '/images/collections/legwear.jpg',
-    import.meta.env['NG_APP_SERVER_URL'] +
+    this.process.env['NG_APP_SERVER_URL'] + '/images/collections/all.jpg',
+    this.process.env['NG_APP_SERVER_URL'] + '/images/collections/jackets.jpg',
+    this.process.env['NG_APP_SERVER_URL'] + '/images/collections/shirts.jpg',
+    this.process.env['NG_APP_SERVER_URL'] + '/images/collections/tops.jpg',
+    this.process.env['NG_APP_SERVER_URL'] + '/images/collections/legwear.jpg',
+    this.process.env['NG_APP_SERVER_URL'] +
       '/images/collections/accessories.jpg',
   ];
   categoryIndex: number = 0;
@@ -62,7 +63,8 @@ export class HomeComponent {
 
   constructor(
     @Inject('instance1') private newestProductsService: ProductService,
-    @Inject('instance2') private mostPopularProductsService: ProductService
+    @Inject('instance2') private mostPopularProductsService: ProductService,
+    private process: EnvService
   ) {
     this.newestProductsService.fetchProducts('newest');
     this.mostPopularProductsService.fetchProducts('popular');
