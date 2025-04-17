@@ -44,12 +44,13 @@ import { featherMenu } from '@ng-icons/feather-icons';
       </nav>
 
       <!-- Mobile Menu -->
-      @if(areWeOnAdmin) {
-      <div class="block sm:hidden absolute top-[3%] right-[10%]">
+      @if(isMobile && areWeOnAdmin) {
+      <div class="absolute top-[3%] right-[10%]">
         <button class="relative flex z-20" (click)="openMobileMenu()">
           <ng-icon name="featherMenu" size="2rem" />
         </button>
         @if(mobileMenuOpen === true) {
+        <!-- overlay -->
         <div
           class="fixed top-0 left-0 w-full h-screen bg-[rgba(0,0,0,0.7)] flex justify-end z-20"
           (click)="closeMobileMenu()"
@@ -63,11 +64,9 @@ import { featherMenu } from '@ng-icons/feather-icons';
           }"
           (click)="$event.stopPropagation()"
         >
-          @if(isMobile) {
           <div class="flex flex-col gap-4 items-stretch">
             <ng-container *ngTemplateOutlet="content"></ng-container>
           </div>
-          }
         </div>
       </div>
       }
