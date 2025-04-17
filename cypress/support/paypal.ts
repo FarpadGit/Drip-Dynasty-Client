@@ -1,6 +1,6 @@
 // Paypal has a strict security measure on its UI which means we have to generate a real transaction request through API calls even while testing,
 // otherwise clicking on the button will throw an error event as it sends the request ID to its servers for comparison.
-// This code is similar to what the server side services do when initiating payment request. The transaction however will never go through to PayPal.
+// This code is similar to what the Drip server side services do when initiating payment request. The transaction however will never go through to PayPal (only the request).
 
 export function getBearer() {
   try {
