@@ -7,7 +7,6 @@ import { ProductCardComponent } from '../../UI/product-card/product-card.compone
 import { SectionHeadComponent } from '../../UI/section-head.component';
 import { BigSpinnerComponent } from '../../UI/spinner/spinner.component';
 import { NavButtonComponent } from '../../UI/nav-button.component';
-import { debounce } from '../../../utils/debounce';
 import { asyncType, productType } from '../../../types';
 import { NgPluralizeService, NgPluralizeModule } from 'ng-pluralize';
 
@@ -50,28 +49,20 @@ export class ProductsComponent implements OnDestroy {
       this.category = params.get('category');
       // route params and query params are in a race condition to update the product list as both can change independently
       // debouncing the update with a delay of 0 (basically delaying it to the next change detection cycle) seems to remedy this.
-      debounce(() => this.fetchProducts(), 0);
+      setTimeout(() => this.fetchProducts(), 0);
     });
 
     this.queryParamSub = this.route.queryParamMap.subscribe((query) => {
       this.currentUrl = this.router.url.split('?')[0];
       this.page = parseInt(query.get('page') || '0');
 
-      debounce(() => this.fetchProducts(), 0);
+      setTimeout(() => this.fetchProducts(), 0);
     });
 
     effect(async () => {
       if (firstRun) return;
 
-      const products = this.productService.getProducts();
-
-      this.activeProducts = {
-        isLoading: products.isLoading,
-        hasError: products.hasError,
-        value: products.value?.filter((p) => p.isActive) ?? null,
-      };
-      if (this.activeProducts.value?.length === 0)
-        this.router.navigate([], { queryParams: null });
+      this.activeProducts = this.productService.getProducts();
     });
 
     firstRun = false;
