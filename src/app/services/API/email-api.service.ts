@@ -4,11 +4,9 @@ import { APIService } from './api.service';
 @Injectable({
   providedIn: 'root',
 })
-export class EmailApiService {
-  constructor(private APIService: APIService) {}
-
+export class EmailApiService extends APIService {
   async sendOrderHistory(email: string) {
-    return this.APIService.makeRequest('/email/orderHistory', {
+    return this.makeRequest('/email/orderHistory', {
       method: 'POST',
       data: { id: '', email, orders: [] },
     });

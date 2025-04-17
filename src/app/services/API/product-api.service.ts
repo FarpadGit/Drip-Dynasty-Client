@@ -11,34 +11,32 @@ import {
 @Injectable({
   providedIn: 'root',
 })
-export class ProductAPIService {
-  constructor(private APIService: APIService) {}
-
+export class ProductAPIService extends APIService {
   async getProducts(category?: string, page?: number) {
     const q1 = category !== undefined ? `category=${category}` : null;
     const q2 = page !== undefined ? `page=${page}` : null;
     let query = '?' + [q1, q2].filter((q) => q).join('&');
     if (query === '?') query = '';
 
-    return this.APIService.makeRequest(`/products` + query).then((ps) =>
+    return this.makeRequest(`/products` + query).then((ps) =>
       !ps.error ? parsePaginatedProductJSON(ps) : ps
     );
   }
 
   async getNewestProducts() {
-    return this.APIService.makeRequest('/products/newest').then((ps) =>
+    return this.makeRequest('/products/newest').then((ps) =>
       !ps.error ? ps.map((p: any) => parseProductJSON(p)) : ps
     );
   }
 
   async getMostPopularProducts() {
-    return this.APIService.makeRequest('/products/mostPopular').then((ps) =>
+    return this.makeRequest('/products/mostPopular').then((ps) =>
       !ps.error ? ps.map((p: any) => parseProductJSON(p)) : ps
     );
   }
 
   async getProduct(id: string) {
-    return this.APIService.makeRequest(`/products/${id}`).then((p) =>
+    return this.makeRequest(`/products/${id}`).then((p) =>
       !p.error ? parseProductJSON(p) : p
     );
   }
@@ -57,7 +55,7 @@ export class ProductAPIService {
 
     newImages.forEach((img) => formData.append('imageFiles[]', img));
 
-    return this.APIService.makeFormRequest('/products', 'POST', formData);
+    return this.makeFormRequest('/products', 'POST', formData);
   }
 
   updateProduct(
@@ -71,7 +69,7 @@ export class ProductAPIService {
     newImages?.forEach((img) => formData.append('imageFiles[]', img));
     imagesToDelete?.forEach((img) => formData.append('imagesToDelete[]', img));
 
-    return this.APIService.makeFormRequest(`/products/${id}`, 'PUT', formData);
+    return this.makeFormRequest(`/products/${id}`, 'PUT', formData);
   }
 
   buyProduct(
@@ -86,7 +84,7 @@ export class ProductAPIService {
       pricePaid,
     });
 
-    return this.APIService.makeFormRequest(
+    return this.makeFormRequest(
       `/paypal/purchase/${transactionId}`,
       'POST',
       formData
@@ -94,6 +92,6 @@ export class ProductAPIService {
   }
 
   deleteProduct(id: string) {
-    return this.APIService.makeRequest(`/products/${id}`, { method: 'DELETE' });
+    return this.makeRequest(`/products/${id}`, { method: 'DELETE' });
   }
 }

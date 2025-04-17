@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
+import { AxiosService } from './API/axios.service';
 import { APIService } from './API/api.service';
 import { CookieService } from 'ngx-cookie-service';
 
@@ -12,6 +13,7 @@ export class AuthService {
 
   constructor(
     private APIService: APIService,
+    private axiosService: AxiosService,
     private cookieService: CookieService,
     private router: Router
   ) {}
@@ -19,7 +21,7 @@ export class AuthService {
   async login(username: string, password: string) {
     const response = await this.APIService.login(username, password);
     if (response.error) return false;
-    this.APIService.setBearer(response as string);
+    this.axiosService.setBearer(response as string);
     this.cookieService.set('drip-auth', response as string, {
       expires: 1,
       path: '/',
@@ -29,9 +31,12 @@ export class AuthService {
   }
 
   async authenticate() {
-    if (!this.APIService.hasBearer() && this.cookieService.check('drip-auth')) {
+    if (
+      !this.axiosService.hasBearer() &&
+      this.cookieService.check('drip-auth')
+    ) {
       const bearer = this.cookieService.get('drip-auth');
-      this.APIService.setBearer(bearer);
+      this.axiosService.setBearer(bearer);
     }
     if (this.isLoggedIn) {
       this.optimisticAuthenticate();
@@ -42,7 +47,7 @@ export class AuthService {
   }
 
   logout() {
-    this.APIService.revokeBearer();
+    this.axiosService.revokeBearer();
     this.cookieService.delete('drip-auth');
     this.isLoggedIn = false;
   }

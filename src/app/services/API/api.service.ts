@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
-import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
-import { EnvService } from '../env.service';
+import { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
+import { AxiosService } from './axios.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class APIService {
-  constructor(private process: EnvService) {}
+  constructor(private axiosService: AxiosService) {}
+
   private errorFn = (error: AxiosError) => {
     let errorMessage = null;
     switch (error.response?.status) {
@@ -25,13 +26,9 @@ export class APIService {
     return { error: errorMessage };
   };
 
-  private callAxios = axios.create({
-    baseURL: this.process.env['NG_APP_SERVER_URL'],
-    withCredentials: true,
-  });
-
-  async makeRequest(url: string, options?: AxiosRequestConfig<any>) {
-    return this.callAxios(url, options)
+  protected async makeRequest(url: string, options?: AxiosRequestConfig<any>) {
+    return this.axiosService
+      .callAxios(url, options)
       .then((res: AxiosResponse) => res.data)
       .catch(this.errorFn);
   }
@@ -42,27 +39,15 @@ export class APIService {
     formData: FormData
   ) {
     if (method === 'POST')
-      return this.callAxios
+      return this.axiosService.callAxios
         .post(url, formData)
         .then((res: AxiosResponse) => res.data)
         .catch(this.errorFn);
     if (method === 'PUT')
-      return this.callAxios
+      return this.axiosService.callAxios
         .put(url, formData)
         .then((res: AxiosResponse) => res.data)
         .catch(this.errorFn);
-  }
-
-  hasBearer() {
-    return this.callAxios.defaults.headers.common['Authorization'] != undefined;
-  }
-
-  setBearer(token: string) {
-    this.callAxios.defaults.headers.common['Authorization'] = 'Bearer ' + token;
-  }
-
-  revokeBearer() {
-    this.callAxios.defaults.headers.common['Authorization'] = undefined;
   }
 
   async checkCredentials() {
