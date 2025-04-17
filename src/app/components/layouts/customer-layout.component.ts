@@ -23,7 +23,7 @@ import { NavlinkComponent } from '../UI/navbar/navlink.component';
           target="_blank"
           rel="noreferrer noopener"
         >
-          Fabók Árpád ©2024-2025
+          Fabók Árpád ©2024-{{ currentYear }}
         </a>
       </div>
     </footer>`,
@@ -32,5 +32,8 @@ export class customerLayoutComponent {
   constructor(private router: Router) {}
   get navbarStyle() {
     return this.router.url === '/' ? 'transparent' : 'drip';
+  }
+  get currentYear() {
+    return new Date().getFullYear();
   }
 }
