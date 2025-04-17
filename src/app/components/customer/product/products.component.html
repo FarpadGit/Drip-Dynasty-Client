@@ -7,11 +7,16 @@
     </div>
   }
   @else if(hasError) {
-    <div class="flex justify-center text-3xl">Our servers are down at the moment, please check back at a later time</div>
+    <div data-test-error-msg class="flex justify-center text-3xl">Our servers are down at the moment, please check back at a later time</div>
   }
   @else {
-    @for(product of activeProducts.value; track product; let i = $index) {
-      <ui-product-card [product]="product" [animDelay]="i * 100" class="drop-shadow-green-dark"></ui-product-card>
+    @if(activeProducts.value?.length === 0) {
+      <div data-test-empty-msg class="col-span-full flex justify-center text-3xl">Our catalog is currently under maintenance, please check back at a later time</div>
+    }
+    @else {
+      @for(product of activeProducts.value; track product.id; let i = $index) {
+        <ui-product-card [product]="product" [animDelay]="i * 100" class="drop-shadow-green-dark"></ui-product-card>
+      }
     }
   }
 </div>

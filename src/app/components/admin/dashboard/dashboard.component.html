@@ -3,7 +3,7 @@
     <ui-card [title]="'Customers'" [subtitle]="averageValuePerCustomer + ' Average Value'" [body]="customerCount"></ui-card>
     <ui-card [title]="'Active Products'" [subtitle]="inactiveCount + ' Inactive'" [body]="activeCount"></ui-card>
 </div>
-<button class="ui-button mt-4" variant="primary" (click)="openConfirmModal()">Reset database</button>
+<button data-test-reset-btn class="ui-button mt-4" variant="primary" (click)="openConfirmModal()">Reset database</button>
 @if(isConfirmModalOpen) {
     <app-confirm-modal (close)="closeConfirmModal($event)"></app-confirm-modal>
 }

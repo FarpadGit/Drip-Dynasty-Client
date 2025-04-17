@@ -25,10 +25,16 @@ import { ButtonDirective } from '../../../directives/UI/button.directive';
         a little too carried away with playing with the site.
       </p>
       <div class="flex justify-between mt-4">
-        <button class="ui-button" variant="primary" (click)="closeModal(true)">
+        <button
+          data-test-confirm-btn
+          class="ui-button"
+          variant="primary"
+          (click)="closeModal(true)"
+        >
           Yes, reset it
         </button>
         <button
+          data-test-cancel-btn
           class="ui-button"
           variant="secondary"
           (click)="closeModal(false)"
