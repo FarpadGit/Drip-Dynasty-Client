@@ -5,7 +5,7 @@
   top: 0;
 }
 
-@mixin glitch($name) {
+@mixin glitch-anims($name) {
   @keyframes glitch-#{$name} {
     2%, 64% {
       transform: translate(2px, 0) skew(0deg);
@@ -21,12 +21,7 @@
     }
   }
 
-  &:before {
-    @include pseudo();
-    animation: glitchTop-#{$name} 1s linear;
-    clip-path: polygon(0 0, 100% 0, 100% 33%, 0 33%);
-
-    @keyframes glitchTop-#{$name} {
+  @keyframes glitchTop-#{$name} {
       2%, 64% {
           transform: translate(2px, -2px);
       }
@@ -40,12 +35,6 @@
           transform: none;
         }
     }
-  }
-
-  &:after {
-    @include pseudo();
-    animation: glitchBottom-#{$name} 1.5s linear;
-    clip-path: polygon(0 67%, 100% 67%, 100% 100%, 0 100%);
 
     @keyframes glitchBottom-#{$name} {
       2%, 64% {
@@ -61,9 +50,24 @@
           transform: none;
         }
     }
+}
+
+@mixin glitch($name) {
+  &:before {
+    @include pseudo();
+    animation: glitchTop-#{$name} 1s linear;
+    clip-path: polygon(0 0, 100% 0, 100% 33%, 0 33%);
+  }
+
+  &:after {
+    @include pseudo();
+    animation: glitchBottom-#{$name} 1.5s linear;
+    clip-path: polygon(0 67%, 100% 67%, 100% 100%, 0 100%);    
   }
 }
 
+@include glitch-anims(1);
+@include glitch-anims(2);
 
 .glitch {
   @include glitch(1);
