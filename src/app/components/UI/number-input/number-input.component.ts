@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { InputDirective } from '../../../directives/UI/input.directive';
 import { LabelDirective } from '../../../directives/UI/label.directive';
@@ -7,7 +7,7 @@ import { LabelDirective } from '../../../directives/UI/label.directive';
 @Component({
   selector: 'ui-number-input',
   standalone: true,
-  imports: [CommonModule, InputDirective, LabelDirective],
+  imports: [InputDirective, LabelDirective],
   templateUrl: './number-input.component.html',
   providers: [
     {
