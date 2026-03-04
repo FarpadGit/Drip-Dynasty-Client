@@ -15,7 +15,7 @@ import { NavlinkComponent } from '../UI/navbar/navlink.component';
     <main class="container min-h-[70vh] 2xl:max-w-screen-2xl my-6">
       <router-outlet />
     </main>
-    <footer class="relative bg-primary text-primary-foreground p-8">
+    <footer class="relative bg-sharp-black text-sharp-white p-8">
       <div>
         Copyright
         <a

@@ -33,40 +33,62 @@ const config = {
           light: 'var(--orange-light)',
           dark: 'var(--orange-dark)',
         },
+        'sharp-black': 'var(--sharp-black)',
+        'sharp-white': 'var(--sharp-white)',
+        'pale-black': 'var(--pale-black)',
+        'pale-white': 'var(--pale-white)',
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',
         ring: 'hsl(var(--ring))',
-        background: 'hsl(var(--background))',
-        foreground: 'hsl(var(--foreground))',
+        background: 'var(--background)',
+        foreground: 'var(--foreground)',
         primary: {
-          DEFAULT: 'hsl(var(--primary))',
-          foreground: 'hsl(var(--primary-foreground))',
+          DEFAULT: 'var(--primary)',
+          foreground: 'var(--primary-foreground)',
+          light: 'var(--primary-light)',
+          dark: 'var(--primary-dark)',
         },
         secondary: {
-          DEFAULT: 'hsl(var(--secondary))',
-          foreground: 'hsl(var(--secondary-foreground))',
-        },
-        destructive: {
-          DEFAULT: 'hsl(var(--destructive))',
-          foreground: 'hsl(var(--destructive-foreground))',
-        },
-        muted: {
-          DEFAULT: 'hsl(var(--muted))',
-          foreground: 'hsl(var(--muted-foreground))',
+          DEFAULT: 'var(--secondary)',
+          foreground: 'var(--secondary-foreground)',
+          light: 'var(--secondary-light)',
+          dark: 'var(--secondary-dark)',
         },
         leading: {
-          DEFAULT: 'hsl(var(--leading))',
-          light: 'hsl(var(--leading-light))',
-          foreground: 'hsl(var(--leading-foreground))',
+          DEFAULT: 'var(--leading)',
+          light: 'var(--leading-light)',
+          foreground: 'var(--leading-foreground)',
+        },
+        muted: {
+          DEFAULT: 'var(--muted)',
+          foreground: 'var(--muted-foreground)',
+        },
+        destructive: {
+          DEFAULT: 'var(--destructive)',
+          foreground: 'var(--destructive-foreground)',
+        },
+        button: {
+          primary: {
+            DEFAULT: 'var(--button-primary)',
+            foreground: 'var(--button-primary-foreground)',
+          },
+          secondary: {
+            DEFAULT: 'var(--button-secondary)',
+            foreground: 'var(--button-secondary-foreground)',
+          },
+          leading: {
+            DEFAULT: 'var(--button-leading)',
+            foreground: 'var(--button-leading-foreground)',
+          },
         },
         popover: {
-          DEFAULT: 'hsl(var(--popover))',
-          foreground: 'hsl(var(--popover-foreground))',
+          DEFAULT: 'var(--popover)',
+          foreground: 'var(--popover-foreground)',
         },
         card: {
-          DEFAULT: 'hsl(var(--card))',
-          secondary: 'hsl(var(--card-secondary))',
-          foreground: 'hsl(var(--card-foreground))',
+          DEFAULT: 'var(--card)',
+          secondary: 'var(--card-secondary)',
+          foreground: 'var(--card-foreground)',
         },
       },
       fontSize: {
@@ -89,7 +111,7 @@ const config = {
         leading: '0 0 20px hsl(var(--leading))',
       },
       dropShadow: {
-        'green-dark': '5px 5px 1px var(--green-dark)',
+        'primary-dark': '5px 5px 1px var(--primary-dark)',
       },
       borderRadius: {
         lg: 'var(--radius)',
@@ -118,7 +140,7 @@ const config = {
       },
     },
   },
-  plugins: [],
+  plugins: [require('@tailwindcss/container-queries')],
 } satisfies Config;
 
 module.exports = config;

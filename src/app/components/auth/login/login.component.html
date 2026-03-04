@@ -9,6 +9,7 @@
                 id="username"
                 name="username"
                 formControlName="username"
+                autofocus
                 />
             @if(loginForm.controls.username.errors?.['required'] && loginForm.controls.username.touched) {
                 <div class="text-destructive">Username is required</div>

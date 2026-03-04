@@ -44,7 +44,7 @@ export const routes: Routes = [
         component: ProductFormComponent,
       },
       {
-        path: 'products/:id/edit',
+        path: 'products/:slug/edit',
         component: ProductFormComponent,
       },
       {
@@ -77,7 +77,7 @@ export const routes: Routes = [
         component: PurchaseProcessedComponent,
         canActivate: [purchaseGuard],
       },
-      { path: 'products/:id', component: ProductDetailsComponent },
+      { path: 'products/:slug', component: ProductDetailsComponent },
       {
         path: 'collections/:category',
         title: 'Drip Dynasty - Browse our collections',

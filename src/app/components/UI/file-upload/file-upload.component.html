@@ -1,5 +1,5 @@
 <input id="image" [name]="name" type="file" class="hidden" accept="image/*" multiple #fileUpload (change)="emitFiles($event)">
-<div class="border-4 border-dashed p-4 break-words" [ngClass]="{'border-green bg-blue-400': inDropZone}" 
+<div class="border-4 border-dashed p-4 break-words transition-colors duration-500" [ngClass]="{'border-green bg-blue-400': inDropZone}" 
     (dragover)="$event.preventDefault(); inDropZone = true" 
     (dragleave)="$event.preventDefault(); inDropZone = false" 
     (drop)="handleDrop($event)"

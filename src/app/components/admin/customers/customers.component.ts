@@ -1,4 +1,4 @@
-import { Component, effect, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { CustomerService } from '../../../services/customer.service';
 import {
   TableComponent,
@@ -7,7 +7,6 @@ import {
 } from '../../UI/table/table.component';
 import { HeaderDirective } from '../../../directives/UI/header.directive';
 import { formatCurrency } from '../../../utils/formatters';
-import { asyncType, customerType } from '../../../types';
 
 @Component({
   selector: 'app-customers',
@@ -15,7 +14,7 @@ import { asyncType, customerType } from '../../../types';
   imports: [HeaderDirective, TableComponent],
   templateUrl: './customers.component.html',
 })
-export class CustomersComponent {
+export class CustomersComponent implements OnInit {
   @ViewChild('table') table!: TableComponent;
   private customers: asyncType<customerType[]> = {
     isLoading: false,
@@ -23,12 +22,11 @@ export class CustomersComponent {
     value: null,
   };
 
-  constructor(private customerService: CustomerService) {
-    customerService.fetchCustomers();
+  constructor(private customerService: CustomerService) {}
 
-    effect(() => {
-      this.customers = this.customerService.getCustomers();
-    });
+  async ngOnInit(): Promise<void> {
+    await this.customerService.fetchCustomers();
+    this.customers = this.customerService.getCustomers();
   }
 
   get isLoading() {
@@ -44,25 +42,23 @@ export class CustomersComponent {
   }
 
   get userTableCells() {
-    return this.customers.value?.map((customer) => {
-      return {
-        id: customer.id,
-        cells: [
-          customer.email,
-          customer.orders?.length,
-          formatCurrency(customer.totalOrderValue || 0),
-        ],
-        options: [
-          {
-            id: 'delete',
-            label: 'delete',
-            styles: 'text-destructive',
-            dialog:
-              'Deleting this customer will also delete all of their existing orders too. Proceed?',
-          },
-        ],
-      };
-    }) as tableRowType[];
+    return this.customers.value?.map((customer) => ({
+      id: customer.id,
+      cells: [
+        customer.email,
+        customer.orders?.length,
+        formatCurrency(customer.totalOrderValue || 0),
+      ],
+      options: [
+        {
+          id: 'delete',
+          label: 'delete',
+          styles: 'text-destructive',
+          dialog:
+            'Deleting this customer will also delete all of their existing orders too. Proceed?',
+        },
+      ],
+    })) as tableRowType[];
   }
 
   handleSelectedOption({

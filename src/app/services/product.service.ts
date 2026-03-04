@@ -1,5 +1,4 @@
 import { Injectable, signal } from '@angular/core';
-import { asyncType, paginatedProductType, productType } from '../types';
 import { ProductAPIService } from './API/product-api.service';
 
 @Injectable({
@@ -11,14 +10,19 @@ export class ProductService {
     hasError: false,
     value: null,
   });
+  private filtersSignal = signal<productFiltersType>({
+    priceMin: undefined,
+    priceMax: undefined,
+    category: undefined,
+    tags: undefined,
+  });
 
   paginationInfo: Omit<paginatedProductType, 'products'> | undefined;
 
   constructor(private APIService: ProductAPIService) {}
 
   async fetchProducts(
-    query: 'all' | 'newest' | 'popular' | string = 'all',
-    page?: number
+    filter: 'all' | 'newest' | 'popular' | productFiltersType = 'all',
   ) {
     this.productsSignal.update((prev) => ({
       ...prev,
@@ -28,10 +32,10 @@ export class ProductService {
 
     let response,
       paginated = false;
-    switch (query) {
+    switch (filter) {
       case 'all':
         {
-          response = await this.APIService.getProducts(undefined, page);
+          response = await this.APIService.getProducts();
           paginated = true;
         }
         break;
@@ -43,7 +47,7 @@ export class ProductService {
         break;
       default:
         {
-          response = await this.APIService.getProducts(query, page);
+          response = await this.APIService.getProducts(filter);
           paginated = true;
         }
         break;
@@ -88,9 +92,15 @@ export class ProductService {
     return response as productType;
   }
 
+  async getProductBySlug(slug: string) {
+    const response = await this.APIService.getProductBySlug(slug);
+    if (response.error) return null;
+    return response as productType;
+  }
+
   async addNewProduct(
     newProduct: Omit<productType, 'id' | 'isActive' | 'createdSince'>,
-    newImageFiles: File[]
+    newImageFiles: File[],
   ) {
     await this.APIService.addNewProduct(newProduct, newImageFiles);
     await this.fetchProducts();
@@ -100,7 +110,7 @@ export class ProductService {
     id: string,
     newProperties: Partial<productType>,
     newImages?: { file: File; path: string }[],
-    imagesToDelete?: string[]
+    imagesToDelete?: string[],
   ) {
     // in update context images and imagePaths are for newly added files only, if they're empty then don't overwrite existing
     const shouldSaveImages = newImages != undefined && newImages.length > 0;
@@ -119,7 +129,7 @@ export class ProductService {
       id,
       { ...product, ..._newProperties },
       newImages?.map((img) => img.file),
-      imagesToDelete
+      imagesToDelete,
     );
 
     await this.fetchProducts();
@@ -135,17 +145,59 @@ export class ProductService {
     return true;
   }
 
-  async buyProduct(product: productType, email: string, transactionId: string) {
+  async buyProduct(
+    product: productType,
+    email: string,
+    transactionId: string,
+    variants?: orderType['variants'],
+  ) {
     return await this.APIService.buyProduct(
       transactionId,
       product.id,
+      product.name,
       email,
-      product.price
+      product.price,
+      variants,
     );
   }
 
   async deleteProduct(id: string) {
     await this.APIService.deleteProduct(id);
     await this.fetchProducts();
+  }
+
+  getProductFilters() {
+    if (Object.values(this.filtersSignal()).filter((f) => f).length === 0)
+      return undefined;
+    return this.filtersSignal();
+  }
+
+  setProductFilters(newFilters: Partial<productFiltersType>) {
+    this.filtersSignal.update((prev) => ({
+      ...prev,
+      ...newFilters,
+    }));
+  }
+
+  async getAllSearchTags() {
+    const response = await this.APIService.getAllSearchTags();
+    if (response.error) return null;
+    return response as {
+      searchTags: NonNullable<productType['searchTags']>;
+      maxPrice: number;
+    };
+  }
+
+  static isOutOfStock(product: productType) {
+    if (!product.variants || product.variants.length === 0)
+      return product.defaultStock === 0;
+    else {
+      for (let variantGroup of product.variants) {
+        for (let variant of variantGroup.variants) {
+          if (variant.stock > 0) return false;
+        }
+      }
+      return true;
+    }
   }
 }

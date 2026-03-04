@@ -10,7 +10,6 @@ import {
 import { NavButtonComponent } from '../../UI/nav-button.component';
 import { HeaderDirective } from '../../../directives/UI/header.directive';
 import { formatCurrency } from '../../../utils/formatters';
-import { asyncType, productType } from '../../../types';
 import { featherCheck, featherSlash } from '@ng-icons/feather-icons';
 
 @Component({
@@ -29,7 +28,10 @@ export class ProductsComponent {
 
   productTableCells: tableRowType[] = [];
 
-  constructor(private productService: ProductService, private router: Router) {
+  constructor(
+    private productService: ProductService,
+    private router: Router,
+  ) {
     this.productService.fetchProducts('all');
 
     effect(() => {
@@ -107,7 +109,7 @@ export class ProductsComponent {
     return options.filter((o) => o);
   }
 
-  handleSelectedOption({
+  async handleSelectedOption({
     itemId: productId,
     option,
   }: {
@@ -115,8 +117,11 @@ export class ProductsComponent {
     option: tableOptionType;
   }) {
     if (option.id === 'edit') {
-      this.table.actionResponse.set('ok');
-      this.router.navigate([`admin/products/${productId}/edit`]);
+      const product = await this.productService.getProduct(productId);
+      if (product != null) {
+        this.table.actionResponse.set('ok');
+        this.router.navigate([`admin/products/${product.slug}/edit`]);
+      } else option.error = 'Error: Product not found in database';
     }
     if (option.id === 'toggleActivate') {
       this.tryToggleProduct(productId, option);
@@ -128,9 +133,8 @@ export class ProductsComponent {
   }
 
   async tryToggleProduct(productId: string, option: tableOptionType) {
-    const canToggle = await this.productService.toggleProductActivation(
-      productId
-    );
+    const canToggle =
+      await this.productService.toggleProductActivation(productId);
     if (canToggle) this.table.actionResponse.set('ok');
     else option.error = 'You cannot activate a product with no images';
   }

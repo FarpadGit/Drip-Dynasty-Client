@@ -5,12 +5,17 @@ import { Router } from '@angular/router';
 import { ProductService } from '../../../../services/product.service';
 import { ImageComponent } from './image.component';
 import { SliderComponent } from '../../../UI/slider.component';
+import { StyledButtonComponent } from '../../../UI/styled-button.component';
+import { NavButtonComponent } from '../../../UI/nav-button.component';
 import { PaypalButtonComponent } from '../../../UI/paypal-button/paypal-button.component';
 import { ButtonDirective } from '../../../../directives/UI/button.directive';
 import { formatCurrency } from '../../../../utils/formatters';
-import { productType } from '../../../../types';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
-import { featherArrowLeft, featherArrowRight } from '@ng-icons/feather-icons';
+import {
+  featherArrowLeft,
+  featherArrowRight,
+  featherCheck,
+} from '@ng-icons/feather-icons';
 
 @Component({
   selector: 'app-details',
@@ -23,31 +28,55 @@ import { featherArrowLeft, featherArrowRight } from '@ng-icons/feather-icons';
     ButtonDirective,
     NgIconComponent,
     PaypalButtonComponent,
+    StyledButtonComponent,
+    NavButtonComponent,
   ],
-  providers: [provideIcons({ featherArrowLeft, featherArrowRight })],
+  providers: [
+    provideIcons({ featherArrowLeft, featherArrowRight, featherCheck }),
+  ],
   templateUrl: './details.component.html',
-  styles: `.description { scrollbar-width: thin; }`,
+  styles: `
+    .description {
+      scrollbar-width: thin;
+    }
+    .icon-outline {
+      filter: drop-shadow(1px 1px 0 black) drop-shadow(-1px -1px 0 black)
+        drop-shadow(1px -1px 0 black) drop-shadow(-1px 1px 0 black);
+    }
+  `,
 })
 export class ProductDetailsComponent implements OnInit {
-  @Input() id!: string;
-  product: productType | undefined;
+  @Input() slug!: string;
+  product!: productType;
   selectedImageIndex: number = 1;
+  isLoading: boolean = true;
   ispurchaseLoading: boolean = false;
   isHintOpen: boolean = false;
+  _variants:
+    | (NonNullable<productType['variants']>[number] & {
+        selectedIndex: number;
+      })[]
+    | undefined;
 
-  constructor(private productService: ProductService, private router: Router) {}
-
-  get isLoading() {
-    return this.product == undefined;
-  }
+  constructor(
+    private productService: ProductService,
+    private router: Router,
+  ) {}
 
   async ngOnInit() {
-    this.product = (await this.productService.getProduct(this.id)) ?? undefined;
-    if (this.product == undefined) this.router.navigate(['/products']);
+    const _product = await this.productService.getProductBySlug(this.slug);
+    if (_product == null) this.router.navigate(['/products']);
+    else {
+      this.product = _product;
+      this._variants = this.product.variants?.map((variant) => ({
+        ...variant,
+        selectedIndex: variant.variants.findIndex((v) => v.stock > 0),
+      }));
+      this.isLoading = false;
+    }
   }
 
   setDisplayedImage(index: number | '-' | '+') {
-    if (!this.product) return;
     let newIndex: number;
     if (index === '+') newIndex = this.selectedImageIndex + 1;
     else if (index === '-') newIndex = this.selectedImageIndex - 1;
@@ -58,25 +87,30 @@ export class ProductDetailsComponent implements OnInit {
     this.selectedImageIndex = newIndex;
   }
 
+  get variants() {
+    return this._variants;
+  }
+
   get currentPrice() {
-    if (!this.product) return 0;
     return this.product.discount === 0
       ? this.product.price
       : this.product.price - this.product.discount;
   }
 
   get discountPercent() {
-    return ((this.product!.discount / this.product!.price) * 100).toFixed(0);
+    return ((this.product.discount / this.product.price) * 100).toFixed(0);
   }
 
   get images() {
-    if (!this.product) return [];
     return this.product.imagePaths;
   }
 
   get displayedImgSrc() {
-    if (!this.product) return '';
     return this.product.imagePaths[this.selectedImageIndex - 1];
+  }
+
+  get isOutOfStock() {
+    return ProductService.isOutOfStock(this.product);
   }
 
   get formatCurrency() {
@@ -90,11 +124,19 @@ export class ProductDetailsComponent implements OnInit {
     transactionId: string;
     email: string;
   }) {
-    if (this.product == undefined) return;
+    if (ProductService.isOutOfStock(this.product)) return;
+
+    const orderedVariants: orderType['variants'] = this._variants?.map(
+      (variant) => ({
+        name: variant.groupName,
+        value: variant.variants[variant.selectedIndex].name,
+      }),
+    );
     const orderId = await this.productService.buyProduct(
       this.product,
       email,
-      transactionId
+      transactionId,
+      orderedVariants,
     );
 
     this.router.navigate(['/products/purchase-processed'], { info: orderId });

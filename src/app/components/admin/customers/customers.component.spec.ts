@@ -2,7 +2,6 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { CustomersComponent } from './customers.component';
 import { CustomerService } from '../../../services/customer.service';
-import { asyncType, customerType } from '../../../types';
 import { mockCustomers } from '../../../../test/mocks';
 import { getNumberValueFromText } from '../../../../test/test-utils';
 
@@ -31,6 +30,7 @@ describe('CustomersComponent (Admin facing)', () => {
 
     fixture = TestBed.createComponent(CustomersComponent);
     component = fixture.componentInstance;
+    await component.ngOnInit();
     fixture.detectChanges();
   });
 
@@ -55,7 +55,7 @@ describe('CustomersComponent (Admin facing)', () => {
       orders: row.cells[1],
       value: getNumberValueFromText(row.cells[2] as string),
       options: row.options?.map((option) =>
-        typeof option === 'string' ? option : option.id
+        typeof option === 'string' ? option : option.id,
       ),
     }));
     const expectedCells = mockCustomers.map((customer) => ({

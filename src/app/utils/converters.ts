@@ -1,16 +1,23 @@
-import { orderType, paginatedProductType, productType } from '../types';
-
 // formats productType objects to network sendable FormData
 export function productToFormData(product: productType) {
   const formData = new FormData();
   formData.append('id', product.id);
   formData.append('name', product.name);
+  formData.append('slug', product.slug);
   formData.append('description', product.description);
   formData.append('price', product.price.toString());
   formData.append('discount', product.discount.toString());
   formData.append('isActive', product.isActive.toString());
-  formData.append('extra', product.extra || '');
+  formData.append('emailMessage', product.emailMessage || '');
   product.categories?.forEach((cat) => formData.append('categories[]', cat));
+  product.variants?.forEach((variant, i) =>
+    formData.append(`variantsJson[${i}]`, JSON.stringify(variant)),
+  );
+  product.searchTags?.forEach((tag, i) =>
+    formData.append(`searchTagsJson[${i}]`, JSON.stringify(tag)),
+  );
+  if (product.defaultStock != undefined)
+    formData.append('defaultStock', product.defaultStock.toString());
   product.imagePaths.forEach((path) => formData.append('imagePaths[]', path));
 
   formData.append('createdSince', product.createdSince.toString());
@@ -28,36 +35,28 @@ export function orderToFormData(order: Partial<orderType>) {
   if (order.customerEmail)
     formData.append('customerEmail', order.customerEmail);
   if (order.pricePaid) formData.append('pricePaid', order.pricePaid.toString());
+  if (order.variants)
+    order.variants.forEach((variant, i) => {
+      formData.append(`variantsJson[${i}]`, JSON.stringify(variant));
+    });
 
   return formData;
 }
 
 // parses server response JSON string as productType
 export function parseProductJSON(obj: { [key: string]: any }) {
-  let result = obj;
-  const keysToConvert = [
+  const keysToConvert: (keyof productType)[] = [
     'price',
     'discount',
+    'defaultStock',
     'isActive',
-    'pricePaid',
-    'totalOrderValue',
   ];
-  Object.keys(obj).forEach((key: string) => {
-    try {
-      result[key] = keysToConvert.includes(key)
-        ? JSON.parse(obj[key])
-        : obj[key];
-    } catch (_) {
-      result[key] = obj[key];
-    }
-  });
-
-  return result as productType;
+  return parseJSON<productType>(obj, keysToConvert);
 }
 
 // parses server response JSON string as paginatedProductType
 export function parsePaginatedProductJSON(obj: { [key: string]: any }) {
-  let result = obj;
+  let result = {} as { [key: string]: any };
   Object.keys(obj).forEach((key: string) => {
     try {
       if (key === 'products')
@@ -69,4 +68,31 @@ export function parsePaginatedProductJSON(obj: { [key: string]: any }) {
   });
 
   return result as paginatedProductType;
+}
+
+export function parseCustomerJSON(obj: { [key: string]: any }) {
+  const keysToConvert: (keyof customerType)[] = ['totalOrderValue'];
+  return parseJSON<customerType>(obj, keysToConvert);
+}
+
+export function parseOrderJSON(obj: { [key: string]: any }) {
+  const keysToConvert: (keyof orderType)[] = ['pricePaid'];
+  return parseJSON<orderType>(obj, keysToConvert);
+}
+
+function parseJSON<T>(obj: { [key: string]: any }, keysToConvert: (keyof T)[]) {
+  let result = {} as Partial<T>;
+
+  Object.keys(obj).forEach((key: string) => {
+    try {
+      if (typeof obj[key] === 'object') result[key as keyof T] = obj[key];
+      else if (keysToConvert.includes(key as keyof T))
+        result[key as keyof T] = JSON.parse(obj[key]);
+      else result[key as keyof T] = obj[key];
+    } catch (_) {
+      result[key as keyof T] = obj[key];
+    }
+  });
+
+  return result as T;
 }

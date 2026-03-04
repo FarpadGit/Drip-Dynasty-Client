@@ -1,0 +1,62 @@
+<div 
+    class="@container flex flex-col gap-4 text-xs sm:text-base transition-[width] duration-500 overflow-hidden"
+    [ngClass]="{
+      'w-80': collapse === 'horizontal' && showFilters, 
+      'w-14': collapse === 'horizontal' && !showFilters,
+      'pr-4': collapse === 'horizontal'
+    }"
+    >
+    <div class="flex gap-4">
+      <h3 class="hidden [@container(min-width:10rem)]:block w-full text-center uppercase">Filter Results</h3>
+      <ui-styled-button variant="secondary" [disabled]="!hasLoaded" (onClick)="toggleFilterSidebar()">
+          <ng-icon [name]="collapseButtonIconName" color="white" strokeWidth="3" />
+      </ui-styled-button>
+    </div>
+    <div 
+      class="hidden [@container(min-width:10rem)]:grid transition-[grid-template-rows] duration-500"
+      [ngClass]="{
+        'grid-rows-[1fr]': collapse === 'vertical' && showFilters, 
+        'grid-rows-[0fr]': collapse === 'vertical' && !showFilters,
+      }">
+      <div class="flex flex-col gap-4 overflow-hidden">     
+        <ui-styled-button variant="secondary" class="w-full uppercase" (onClick)="clearFilters()" data-testid="clearall">
+          Clear All
+        </ui-styled-button>
+
+        <div>
+          <p class="uppercase">Price</p>
+          <ngx-slider 
+            [(value)]="priceFilter.min" 
+            [(highValue)]="priceFilter.max" 
+            [options]="priceSliderOptions" 
+            (userChangeEnd)="handlePriceFilterChange()">
+          </ngx-slider>
+        </div>
+    
+        <div class="pt-4">
+          @for(filterGroup of groupedSearchFilters; track filterGroup; let i = $index) {
+            <div class="flex flex-col py-4 border-b first:border-t border-primary-dark" data-testid="searchtag-group">
+              <button class="flex justify-between items-center w-full mb-4" (click)="filterGroup.collapsed = !filterGroup.collapsed">
+                <span class="uppercase">{{ filterGroup.groupLabel }}</span>
+                <ng-icon [name]="filterGroup.collapsed ? 'featherChevronUp' : 'featherChevronDown'" size="1.5rem" color="var(--primary-light)" />
+              </button>
+              <div 
+                class="grid transition-[grid-template-rows] duration-300"
+                [ngClass]="{'grid-rows-[0fr]': filterGroup.collapsed, 'grid-rows-[1fr]': !filterGroup.collapsed}">
+                <div class="space-y-2 overflow-hidden">
+                  @for (filter of filterGroup.filters; track filter; let j = $index) {
+                    <div class="flex gap-4 items-center" data-testid="searchtag">
+                      <ui-styled-button [name]="'tag_' + filterGroup.groupLabel + j" (onClick)="toggleFilter(i, j)">
+                        <ng-icon name="featherCheck" [color]="filter.on ? 'var(--primary-light)' : 'transparent'" strokeWidth="3" class="transition-colors duration-200" />
+                      </ui-styled-button>
+                      <label [for]="'tag_' + filterGroup.groupLabel + j">{{ filter.label }}</label>
+                    </div>
+                  }
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+</div>

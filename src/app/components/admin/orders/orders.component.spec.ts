@@ -1,7 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { OrdersComponent } from './orders.component';
-import { asyncType, orderType } from '../../../types';
 import { OrderService } from '../../../services/order.service';
 import { mockOrders } from '../../../../test/mocks';
 import { getNumberValueFromText } from '../../../../test/test-utils';
@@ -31,6 +30,7 @@ describe('OrdersComponent (Admin facing)', () => {
 
     fixture = TestBed.createComponent(OrdersComponent);
     component = fixture.componentInstance;
+    await component.ngOnInit();
     fixture.detectChanges();
   });
 
@@ -54,7 +54,7 @@ describe('OrdersComponent (Admin facing)', () => {
       email: row.cells[2],
       pricePaid: getNumberValueFromText(row.cells[3] as string),
       options: row.options?.map((option) =>
-        typeof option === 'string' ? option : option.id
+        typeof option === 'string' ? option : option.id,
       ),
     }));
     const expectedCells = mockOrders.map((order) => ({

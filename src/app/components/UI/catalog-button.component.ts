@@ -14,7 +14,7 @@ import { RouterLink } from '@angular/router';
       (mouseleave)="isHover = false"
     >
       <div
-        class="absolute top-0 flex justify-center items-center w-[25.3px] h-12 bg-orange rounded-bl-md clippath-small"
+        class="absolute top-0 flex justify-center items-center w-[25.3px] h-12 bg-secondary rounded-bl-md clippath-small"
         [style]="{ '--clipstart': '10px' }"
       >
         <div
@@ -25,7 +25,7 @@ import { RouterLink } from '@angular/router';
         ></div>
       </div>
       <div
-        class="flex justify-center items-center h-12 bg-orange rounded-r-md clippath"
+        class="flex justify-center items-center h-12 bg-secondary rounded-r-md clippath"
         [style]="{ '--clipstart': '10px' }"
       >
         <div
@@ -39,7 +39,14 @@ import { RouterLink } from '@angular/router';
       </div>
     </button>
   </a>`,
-  styles: `.clippath { clip-path: polygon(var(--clipstart) 0, 42.2px 100%, 100% 100%, 100% 0%); } .clippath-small { clip-path: polygon(0 var(--clipstart), 0 100%, 100% 100%); }`,
+  styles: `
+    .clippath {
+      clip-path: polygon(var(--clipstart) 0, 42.2px 100%, 100% 100%, 100% 0%);
+    }
+    .clippath-small {
+      clip-path: polygon(0 var(--clipstart), 0 100%, 100% 100%);
+    }
+  `,
 })
 export class CatalogButtonComponent {
   @Input() href: string = '';

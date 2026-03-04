@@ -11,6 +11,16 @@ export class MockProductCardComponent {
 }
 
 @Component({
+  selector: 'app-filters',
+  standalone: true,
+  template: ``,
+})
+export class MockFiltersComponent {
+  @Input() defaultOpen: any;
+  @Input() collapse: any;
+}
+
+@Component({
   selector: 'ui-nav-button',
   standalone: true,
   template: `<ng-content />`,

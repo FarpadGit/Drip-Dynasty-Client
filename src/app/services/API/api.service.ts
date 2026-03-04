@@ -36,7 +36,7 @@ export class APIService {
   async makeFormRequest(
     url: string,
     method: 'POST' | 'PUT',
-    formData: FormData
+    formData: FormData,
   ) {
     if (method === 'POST')
       return this.axiosService.callAxios
@@ -64,7 +64,7 @@ export class APIService {
   }
 
   resetDB() {
-    return this.makeRequest('/resetDB', {
+    return this.makeRequest('/reset-db', {
       method: 'POST',
     });
   }

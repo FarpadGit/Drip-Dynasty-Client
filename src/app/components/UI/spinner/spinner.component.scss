@@ -5,7 +5,7 @@
 }
 
 svg circle {
-    stroke: var(--orange);
+    stroke: var(--secondary);
 }
   
 .circle {
@@ -19,11 +19,11 @@ svg circle {
 }
 
 #arc2 {
-    stroke: var(--orange-dark);
+    stroke: var(--secondary-dark);
 }
 
 #arc3 {
-    stroke: var(--orange-light);
+    stroke: var(--secondary-light);
     stroke-dasharray: 400;
     stroke-dashoffset: 400;
     animation: 16s 0s rota infinite linear;
@@ -48,14 +48,14 @@ svg circle {
 }
   
 #arc7 {
-    stroke: var(--orange-dark);
+    stroke: var(--secondary-dark);
     stroke-dasharray: 400;
     stroke-dashoffset: 400;
     animation: 4s 0s rota infinite linear reverse;
 }
 
 #arc8 {
-    stroke: var(--orange-light);
+    stroke: var(--secondary-light);
 }
 
 .text-label {

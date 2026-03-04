@@ -1,8 +1,8 @@
 import { Component, Input } from '@angular/core';
+import { ProductService } from '../../../services/product.service';
 import { BadgeComponent } from '../badge.component';
 import { NavButtonComponent } from '../nav-button.component';
 import { CommonModule } from '@angular/common';
-import { productType } from '../../../types';
 import { formatCurrency } from '../../../utils/formatters';
 import { FaderComponent } from '../fader.component';
 
@@ -11,8 +11,36 @@ import { FaderComponent } from '../fader.component';
   standalone: true,
   imports: [CommonModule, BadgeComponent, NavButtonComponent, FaderComponent],
   templateUrl: './product-card.component.html',
-  styles: `.clippath2 { clip-path: polygon(var(--card-bevel) 0, 0 var(--card-bevel), 0 50%, .75% 51%, .75% 79%, 0 80%, 0% 100%, calc(100% - var(--card-bevel)) 100%, 100% calc(100% - var(--card-bevel)), 100% 50%, 99.25% 49%, 99.25% 21%, 100% 20%, 100% 0%); }
-           .clippath1 { clip-path: polygon(var(--card-bevel) 0, 0 var(--card-bevel), 0% 100%, calc(100% - var(--card-bevel)) 100%, 100% calc(100% - var(--card-bevel)), 100% 0%); }`,
+  styles: `
+    .clippath2 {
+      clip-path: polygon(
+        var(--card-bevel) 0,
+        0 var(--card-bevel),
+        0 50%,
+        0.75% 51%,
+        0.75% 79%,
+        0 80%,
+        0% 100%,
+        calc(100% - var(--card-bevel)) 100%,
+        100% calc(100% - var(--card-bevel)),
+        100% 50%,
+        99.25% 49%,
+        99.25% 21%,
+        100% 20%,
+        100% 0%
+      );
+    }
+    .clippath1 {
+      clip-path: polygon(
+        var(--card-bevel) 0,
+        0 var(--card-bevel),
+        0% 100%,
+        calc(100% - var(--card-bevel)) 100%,
+        100% calc(100% - var(--card-bevel)),
+        100% 0%
+      );
+    }
+  `,
 })
 export class ProductCardComponent {
   @Input() product!: productType;
@@ -27,10 +55,10 @@ export class ProductCardComponent {
   }
 
   get height() {
-    if (this.variant === 'small') return 'h-[200px] sm:h-[320px] lg:h-[400px]';
+    if (this.variant === 'small') return 'h-[220px] sm:h-[320px] lg:h-[400px]';
     if (this.variant === 'horizontal')
-      return 'h-[200px] sm:h-[300px] lg:h-[400px]';
-    return 'h-[240px] sm:h-[360px] lg:h-[480px]';
+      return 'h-[220px] sm:h-[300px] lg:h-[400px]';
+    return 'h-[250px] sm:h-[360px] lg:h-[480px]';
   }
 
   get imgHeight() {
@@ -62,5 +90,9 @@ export class ProductCardComponent {
 
   isNew() {
     return this.product.createdSince < 7 * 24 * 60 * 60 * 1000;
+  }
+
+  isOutOfStock() {
+    return ProductService.isOutOfStock(this.product);
   }
 }

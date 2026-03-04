@@ -3,6 +3,7 @@ import { Location, registerLocaleData } from '@angular/common';
 import localeHu from '@angular/common/locales/hu';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
+  FormArray,
   FormControl,
   FormGroup,
   ReactiveFormsModule,
@@ -19,14 +20,21 @@ import { SwitchComponent } from '../../../UI/switch/switch.component';
 import { DeletableComponent } from '../../../UI/deletable/deletable.component';
 import { LabelDirective } from '../../../../directives/UI/label.directive';
 import { InputDirective } from '../../../../directives/UI/input.directive';
+import { SelectDirective } from '../../../../directives/UI/select.directive';
 import { TextareaDirective } from '../../../../directives/UI/textarea.directive';
 import { ImageFallbackDirective } from '../../../../directives/image-fallback.directive';
 import { HeaderDirective } from '../../../../directives/UI/header.directive';
 import { ButtonDirective } from '../../../../directives/UI/button.directive';
 import { requiredFileType } from '../../../../utils/validators';
 import { formatCurrency } from '../../../../utils/formatters';
-import { productType } from '../../../../types';
 import { NgxEditorModule, Editor, Toolbar } from 'ngx-editor';
+
+type variantValuesType = FormArray<
+  FormGroup<{
+    name: FormControl<string | null>;
+    stock: FormControl<number | null>;
+  }>
+>;
 
 @Component({
   selector: 'app-product-form',
@@ -38,6 +46,7 @@ import { NgxEditorModule, Editor, Toolbar } from 'ngx-editor';
     HeaderDirective,
     LabelDirective,
     InputDirective,
+    SelectDirective,
     ButtonDirective,
     NumberInputComponent,
     TextareaDirective,
@@ -46,27 +55,49 @@ import { NgxEditorModule, Editor, Toolbar } from 'ngx-editor';
     SwitchComponent,
   ],
   templateUrl: './product-form.component.html',
+  styleUrl: './product-form.component.scss',
 })
 export class ProductFormComponent implements OnInit, OnDestroy {
+  slug: string | null = null;
   requiredFileTypes = ['jpg', 'jpeg', 'png'];
 
   productForm = new FormGroup({
     productInfo: new FormGroup({
       name: new FormControl('', Validators.required),
+      slug: new FormControl('', [
+        Validators.required,
+        Validators.pattern('[a-z][a-z0-9-]*'),
+      ]),
       description: new FormControl('', Validators.required),
-      categories: new FormControl(''),
+      categories: new FormArray([] as FormControl[]),
       price: new FormControl<number>(1, [
         Validators.required,
         Validators.min(1),
-        Validators.pattern('[0-9| ]*'),
+        Validators.pattern('[0-9 ]*'),
       ]),
-      extra: new FormControl(''),
+      emailMessage: new FormControl(''),
+      defaultStock: new FormControl(0),
+      variants: new FormArray<
+        FormGroup<{
+          groupName: FormControl<string | null>;
+          type: FormControl<
+            NonNullable<productType['variants']>[number]['type'] | null
+          >;
+          variants: variantValuesType;
+        }>
+      >([]),
+      searchTags: new FormArray<
+        FormGroup<{
+          name: FormControl<string | null>;
+          value: FormControl<string | null>;
+        }>
+      >([]),
     }),
     discount: new FormGroup({
       on: new FormControl<boolean>(false),
       discountValue: new FormControl<number>(1, [
         Validators.min(1),
-        Validators.pattern('[0-9| ]*'),
+        Validators.pattern('[0-9 ]*'),
       ]),
       discountPercent: new FormControl<number>(1, [
         Validators.min(1),
@@ -106,7 +137,6 @@ export class ProductFormComponent implements OnInit, OnDestroy {
     return Math.floor((this.images.length - 1) / 3) + 1;
   }
 
-  userId: string | null = null;
   routeParamSub: Subscription | null = null;
   product: productType | null = null;
 
@@ -114,7 +144,7 @@ export class ProductFormComponent implements OnInit, OnDestroy {
     private productService: ProductService,
     private location: Location,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
   ) {
     registerLocaleData(localeHu, 'hu');
   }
@@ -122,11 +152,11 @@ export class ProductFormComponent implements OnInit, OnDestroy {
   async ngOnInit() {
     this.editor = new Editor();
     this.routeParamSub = this.route.paramMap.subscribe(
-      (params) => (this.userId = params.get('id'))
+      (params) => (this.slug = params.get('slug')),
     );
 
-    if (this.userId !== null) {
-      this.product = await this.productService.getProduct(this.userId);
+    if (this.slug !== null) {
+      this.product = await this.productService.getProductBySlug(this.slug);
 
       if (!this.product) {
         this.location.back();
@@ -134,26 +164,63 @@ export class ProductFormComponent implements OnInit, OnDestroy {
         const productFields = this.productForm.controls.productInfo.controls;
         const discountFields = this.productForm.controls.discount.controls;
         productFields.name.setValue(this.product.name);
+        productFields.slug.setValue(this.product.slug);
         productFields.description.setValue(this.product.description);
-        productFields.categories.setValue(
-          this.product.categories?.join(', ') ?? null
-        );
+        productFields.categories.clear();
+        if (this.product.categories?.length === 0)
+          productFields.categories.push(new FormControl(''));
+        else
+          this.product.categories?.forEach((cat) => {
+            productFields.categories.push(new FormControl(cat));
+          });
         productFields.price.setValue(this.product.price);
-        productFields.extra.setValue(this.product.extra ?? null);
+        productFields.emailMessage.setValue(this.product.emailMessage ?? null);
+        productFields.defaultStock.setValue(this.product.defaultStock ?? 0);
+
+        productFields.variants.clear();
+        this.product.variants?.forEach((variantGroup) => {
+          const formGroupsForValues = variantGroup.variants.map((value) => {
+            return new FormGroup<{
+              name: FormControl<string | null>;
+              stock: FormControl<number | null>;
+            }>({
+              name: new FormControl<string | null>(value.name),
+              stock: new FormControl<number | null>(value.stock),
+            });
+          });
+
+          productFields.variants.push(
+            new FormGroup({
+              groupName: new FormControl(variantGroup.groupName),
+              type: new FormControl(variantGroup.type),
+              variants: new FormArray<(typeof formGroupsForValues)[number]>(
+                formGroupsForValues,
+              ),
+            }),
+          );
+        });
+
+        productFields.searchTags.clear();
+        this.product.searchTags?.forEach((tag) => {
+          productFields.searchTags.push(
+            new FormGroup({
+              name: new FormControl(tag.name),
+              value: new FormControl(tag.value),
+            }),
+          );
+        });
 
         discountFields.on.setValue(this.product.discount > 0);
         discountFields.discountValue.setValue(this.product.discount);
         discountFields.discountPercent.setValue(this.discountPercentage);
 
-        this.images = this.product.imagePaths.map((path) => {
-          return {
-            id: crypto.randomUUID(),
-            name: path,
-            image: { src: path },
-            shouldDelete: false,
-            existsOnServer: true,
-          };
-        });
+        this.images = this.product.imagePaths.map((path) => ({
+          id: crypto.randomUUID(),
+          name: path,
+          image: { src: path },
+          shouldDelete: false,
+          existsOnServer: true,
+        }));
       }
     }
   }
@@ -163,29 +230,102 @@ export class ProductFormComponent implements OnInit, OnDestroy {
     this.editor.destroy();
   }
 
-  get form(): any {
+  get form() {
     return this.productForm.controls;
   }
-  get productInfo(): any {
+  get productInfo() {
     return this.productForm.controls.productInfo.controls;
   }
-  get discount(): any {
+  get categories() {
+    return this.productForm.controls.productInfo.controls.categories.controls;
+  }
+  get variants() {
+    return this.productForm.controls.productInfo.controls.variants.controls;
+  }
+  get searchTags() {
+    return this.productForm.controls.productInfo.controls.searchTags.controls;
+  }
+  get discount() {
     return this.productForm.controls.discount.controls;
   }
   get discountPercentage() {
     const price = Number(
-      this.productForm.controls.productInfo.controls.price.value!
+      this.productForm.controls.productInfo.controls.price.value!,
     );
     const discount = Number(
-      this.productForm.controls.discount.controls.discountValue.value!
+      this.productForm.controls.discount.controls.discountValue.value!,
     );
     return +((discount / price) * 100).toFixed(2);
   }
   get discountedPrice() {
     return formatCurrency(
       Number(this.productForm.controls.productInfo.controls.price.value) -
-        Number(this.productForm.controls.discount.controls.discountValue.value)
+        Number(this.productForm.controls.discount.controls.discountValue.value),
     );
+  }
+  get placeholderText() {
+    return this.slug !== null && this.product == null
+      ? 'loading details...'
+      : '';
+  }
+
+  get submitDisabled() {
+    return (
+      this.productForm.controls.productInfo.invalid ||
+      this.imagePaths.length === 0
+    );
+  }
+
+  addNewCategory() {
+    this.productInfo.categories.push(new FormControl(''));
+  }
+  removeCategory(index: number) {
+    this.productInfo.categories.removeAt(index);
+  }
+
+  addNewVariant() {
+    const form = new FormGroup({
+      groupName: new FormControl(''),
+      type: new FormControl('text'),
+      variants: new FormArray([
+        new FormGroup({
+          name: new FormControl(''),
+          stock: new FormControl(0),
+        }),
+      ]),
+    }) as (typeof this.productInfo.variants.controls)[number];
+    this.productInfo.variants.push(form);
+  }
+  removeVariant(index: number) {
+    this.productInfo.variants.removeAt(index);
+  }
+  addToVariant(variants: variantValuesType) {
+    variants.push(
+      new FormGroup({
+        name: new FormControl(''),
+        stock: new FormControl(0),
+      }),
+    );
+  }
+  removeFromVariant(variants: variantValuesType, index: number) {
+    variants.removeAt(index);
+  }
+
+  addNewSearchTag() {
+    const form = new FormGroup({
+      name: new FormControl(''),
+      value: new FormControl(''),
+    }) as (typeof this.productInfo.searchTags.controls)[number];
+    this.productInfo.searchTags.push(form);
+  }
+  removeSearchTag(index: number) {
+    this.productInfo.searchTags.removeAt(index);
+  }
+
+  onStockChange(e: Event) {
+    const value = (e.target as HTMLInputElement).value;
+    if (value.startsWith('0') && value !== '0')
+      (e.target as HTMLInputElement).value = value.slice(1);
   }
 
   onDiscountPercentChange(e: Event) {
@@ -193,11 +333,11 @@ export class ProductFormComponent implements OnInit, OnDestroy {
     if (percent > 100) percent = 100;
     if (percent < 1) percent = 1;
     const price = Number(
-      this.productForm.controls.productInfo.controls.price.value!
+      this.productForm.controls.productInfo.controls.price.value!,
     );
     const discount = Math.round((price * percent) / 100);
     this.productForm.controls.discount.controls.discountValue.setValue(
-      discount
+      discount,
     );
   }
 
@@ -216,8 +356,8 @@ export class ProductFormComponent implements OnInit, OnDestroy {
   }
 
   async addOrUpdateProduct() {
-    // ngx-editor didn't set its buttons to type='button' so now some of them will try to submit the form...
-    // has to check whether the submit button called this function or not...
+    // ngx-editor didn't set its buttons to type='button' so now some of them will try to submit the form
+    // and I have to check whether the submit button called this function or not...
     if (!this.validSubmit) return;
 
     const productFieldValues = this.productForm.value.productInfo!;
@@ -225,13 +365,18 @@ export class ProductFormComponent implements OnInit, OnDestroy {
 
     const newProduct = {
       name: productFieldValues.name,
+      slug: productFieldValues.slug,
       description: productFieldValues.description,
-      categories: productFieldValues.categories
-        ?.replace(/,\s*/g, ',')
-        .split(','),
+      categories: productFieldValues.categories,
       price: productFieldValues.price,
       discount: discount?.on ? discount.discountValue : 0n,
-      extra: productFieldValues.extra,
+      emailMessage: productFieldValues.emailMessage,
+      variants: productFieldValues.variants,
+      searchTags: productFieldValues.searchTags,
+      defaultStock:
+        (productFieldValues.variants?.length || 0) > 0
+          ? undefined
+          : productFieldValues.defaultStock,
       imagePaths: [],
     } as Omit<productType, 'id' | 'isActive' | 'createdSince'>;
 
@@ -254,22 +399,22 @@ export class ProductFormComponent implements OnInit, OnDestroy {
       .filter((img) => img.existsOnServer && img.shouldDelete)
       .map((img) => img.name);
 
-    if (this.userId !== null) {
+    if (this.slug !== null) {
       const newImages = newImageFiles.map((img, i) => {
         return { file: img, path: newProduct.imagePaths[i] };
       });
       this.productService.updateProduct(
-        this.userId,
+        this.product!.id,
         newProduct,
         newImages,
-        imagesToDelete
+        imagesToDelete,
       );
     } else {
       this.productService.addNewProduct(newProduct, newImageFiles);
     }
 
     this.productForm.reset({
-      productInfo: { price: 1 },
+      productInfo: { price: 1, defaultStock: 0 },
       discount: { on: false, discountValue: 0 },
     });
     this.images = [];

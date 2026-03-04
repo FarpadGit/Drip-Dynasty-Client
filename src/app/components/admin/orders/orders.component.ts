@@ -1,4 +1,4 @@
-import { Component, effect, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { OrderService } from '../../../services/order.service';
 import {
   TableComponent,
@@ -7,7 +7,6 @@ import {
 } from '../../UI/table/table.component';
 import { HeaderDirective } from '../../../directives/UI/header.directive';
 import { formatCurrency } from '../../../utils/formatters';
-import { asyncType, orderType } from '../../../types';
 
 @Component({
   selector: 'app-orders',
@@ -15,7 +14,7 @@ import { asyncType, orderType } from '../../../types';
   imports: [HeaderDirective, TableComponent],
   templateUrl: './orders.component.html',
 })
-export class OrdersComponent {
+export class OrdersComponent implements OnInit {
   @ViewChild('table') table!: TableComponent;
   private orders: asyncType<orderType[]> = {
     isLoading: false,
@@ -23,11 +22,11 @@ export class OrdersComponent {
     value: null,
   };
 
-  constructor(private orderService: OrderService) {
-    orderService.fetchOrders();
-    effect(() => {
-      this.orders = this.orderService.getOrders();
-    });
+  constructor(private orderService: OrderService) {}
+
+  async ngOnInit(): Promise<void> {
+    await this.orderService.fetchOrders();
+    this.orders = this.orderService.getOrders();
   }
 
   get isLoading() {
@@ -39,28 +38,27 @@ export class OrdersComponent {
   }
 
   get headers() {
-    return ['ID', 'Product', 'Customer', 'Price Paid'];
+    return ['ID', 'Product', 'Customer', 'Price Paid', 'Variants'];
   }
 
   get orderTableCells() {
-    return this.orders.value?.map((order) => {
-      return {
-        id: order.id,
-        cells: [
-          order.id,
-          order.productName,
-          order.customerEmail,
-          formatCurrency(order.pricePaid),
-        ],
-        options: [
-          {
-            id: 'delete',
-            label: 'delete',
-            styles: 'text-destructive',
-          },
-        ],
-      };
-    }) as tableRowType[];
+    return this.orders.value?.map((order) => ({
+      id: order.id,
+      cells: [
+        order.id,
+        order.productName,
+        order.customerEmail,
+        formatCurrency(order.pricePaid),
+        order.variants?.map((v) => `${v.name}: ${v.value}`).join(', '),
+      ],
+      options: [
+        {
+          id: 'delete',
+          label: 'delete',
+          styles: 'text-destructive',
+        },
+      ],
+    })) as tableRowType[];
   }
 
   handleSelectedOption({

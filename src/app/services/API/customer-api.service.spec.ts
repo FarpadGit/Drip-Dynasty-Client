@@ -2,7 +2,6 @@ import { TestBed } from '@angular/core/testing';
 
 import { CustomerAPIService } from './customer-api.service';
 import { EnvService } from '../env.service';
-import { customerType } from '../../types';
 import { mockCustomers } from '../../../test/mocks';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';

@@ -1,0 +1,34 @@
+// ngx-editor style overrides
+::ng-deep {
+    .NgxEditor__Wrapper {
+        border-radius: calc(var(--radius) - 2px);
+        border: 1px solid hsl(var(--input));
+        
+        &:has(.NgxEditor__Content:focus-visible) {
+            outline: 2px solid transparent;
+            outline-offset: 2px;
+            box-shadow: 0 0 0 2px hsl(var(--background)), 0 0 0 4px hsl(var(--ring)), 0 0 #0000;
+        }
+
+        .NgxEditor__Content {
+            height: 15rem;
+            overflow: auto;
+
+            ol, ul, menu {
+            list-style: revert;
+            margin: revert;
+            padding: revert;
+            }
+
+            h1, h2, h3, h4, h5, h6 {
+            font-size: revert;
+            font-weight: revert;
+            }
+
+            a {
+            color: revert;
+            text-decoration: revert;
+            }
+        }
+    }
+}

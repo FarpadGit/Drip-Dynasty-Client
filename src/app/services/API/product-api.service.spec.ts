@@ -9,8 +9,8 @@ import {
   mockProducts,
   mockPaginatedProductsPage1,
   mockPaginatedProductsPage2,
+  mockSearchTags,
 } from '../../../test/mocks';
-import { productType } from '../../types';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 
@@ -20,14 +20,22 @@ describe('ProductAPIService', () => {
 
   const mapToServer = (product: productType) => ({
     ...product,
+    variants: product.variants?.map((variant) => JSON.stringify(variant)) || [],
+    searchTags: product.searchTags?.map((tag) => JSON.stringify(tag)) || [],
     discount: product.discount.toString(),
     isActive: product.isActive ? 'true' : 'false',
     price: product.price.toString(),
   });
 
-  const productsResponsePage1 = mockPaginatedProductsPage1.map(mapToServer);
-  const productsResponsePage2 = mockPaginatedProductsPage2.map(mapToServer);
-  const productsResponseWithCategory = mockProducts.map(mapToServer);
+  const withAllFields = (product: productType) => ({
+    ...product,
+    variants: product.variants ?? [],
+    searchTags: product.searchTags ?? [],
+  });
+
+  const mockProductsResponse1 = mockPaginatedProductsPage1.map(mapToServer);
+  const mockProductsResponse2 = mockPaginatedProductsPage2.map(mapToServer);
+  const mockProductsResponse3 = mockProducts.map(mapToServer);
 
   const mockPaginatedProductsResponse = (response: any[]) => ({
     products: response,
@@ -47,16 +55,23 @@ describe('ProductAPIService', () => {
     mockAxios.reset();
     mockAxios
       .onGet('/products')
-      .reply(200, mockPaginatedProductsResponse(productsResponsePage1))
-      .onGet('/products?page=2')
-      .reply(200, mockPaginatedProductsResponse(productsResponsePage2))
-      .onGet('/products?category=category1')
-      .reply(200, mockPaginatedProductsResponse(productsResponseWithCategory))
+      .reply(200, mockPaginatedProductsResponse(mockProductsResponse1))
+      .onGet('/products?category=category1&priceMax=1000&page=2')
+      .reply(200, mockPaginatedProductsResponse(mockProductsResponse2))
+      .onGet(
+        '/products?' +
+          encodeURI('tags[]=') +
+          encodeURIComponent('{"name":"mockTag1","value":"mockValue"}') +
+          encodeURI('&tags[]=&sortBy=date.ASC'),
+      )
+      .reply(200, mockPaginatedProductsResponse(mockProductsResponse3))
       .onGet('/products/newest')
       .reply(200, mockProductsResponse(mockNewestProducts))
-      .onGet('/products/mostPopular')
+      .onGet('/products/most-popular')
       .reply(200, mockProductsResponse(mockPopularProducts))
       .onGet('/products/product1ID')
+      .reply(200, mockProductResponse)
+      .onGet('/products/by-slug/product1Slug')
       .reply(200, mockProductResponse)
       .onPost('/products')
       .reply(201, 'create called')
@@ -65,7 +80,9 @@ describe('ProductAPIService', () => {
       .onDelete('/products/product1ID')
       .reply(204, 'delete called')
       .onPost('/paypal/purchase/transactionID')
-      .reply(200, 'paypal purchase called');
+      .reply(200, 'paypal purchase called')
+      .onGet('/products/searchtags')
+      .reply(200, mockSearchTags.searchTags);
 
     const envSpy = jasmine.createSpyObj('EnvService', [], {
       env: { NG_APP_SERVER_URL: '' },
@@ -84,46 +101,65 @@ describe('ProductAPIService', () => {
   it('should get all products', async () => {
     const response = await service.getProducts();
 
-    expect(response.products).toEqual(mockPaginatedProductsPage1);
+    expect(response.products).toEqual(
+      mockPaginatedProductsPage1.map(withAllFields),
+    );
   });
 
-  it('should get all products on page 2', async () => {
-    const response = await service.getProducts(undefined, 2);
+  it('should get all products with a given set of filters', async () => {
+    const response = await service.getProducts({
+      category: 'category1',
+      priceMax: 1000,
+      page: 2,
+    });
 
-    expect(response.products).toEqual(mockPaginatedProductsPage2);
+    expect(response.products).toEqual(
+      mockPaginatedProductsPage2.map(withAllFields),
+    );
   });
 
-  it('should get all products with given category', async () => {
-    const response = await service.getProducts('category1');
+  it('should get all products with a given set of filters in JSON format', async () => {
+    const response = await service.getProducts({
+      tags: [{ name: 'mockTag1', value: 'mockValue' }],
+      sort: { by: 'date', order: 'ASC' },
+    });
 
-    expect(response.products).toEqual(mockProducts);
+    expect(response.products).toEqual(mockProducts.map(withAllFields));
   });
 
   it('should get newest products', async () => {
     const response = await service.getNewestProducts();
 
-    expect(response).toEqual(mockNewestProducts);
+    expect(response).toEqual(mockNewestProducts.map(withAllFields));
   });
 
   it('should get most popular products', async () => {
     const response = await service.getMostPopularProducts();
 
-    expect(response).toEqual(mockPopularProducts);
+    expect(response).toEqual(mockPopularProducts.map(withAllFields));
   });
 
   it('should get product with id', async () => {
     const response = await service.getProduct('product1ID');
 
-    expect(response).toEqual(mockNewProduct);
+    expect(response).toEqual(withAllFields(mockNewProduct));
+  });
+
+  it('should get product with slug', async () => {
+    const response = await service.getProductBySlug('product1Slug');
+
+    expect(response).toEqual(withAllFields(mockNewProduct));
   });
 
   it('should make a call to add new product', async () => {
     const mockNewProduct = {
       name: 'New Product',
+      slug: 'new-product',
       description: 'description',
       discount: 0,
       imagePaths: [],
       price: 100,
+      stock: 10,
     };
 
     const response = await service.addNewProduct(mockNewProduct, []);
@@ -139,7 +175,7 @@ describe('ProductAPIService', () => {
 
     const response = await service.updateProduct(
       'product1ID',
-      mockUpdatedProduct
+      mockUpdatedProduct,
     );
 
     expect(response).toBe('update called');
@@ -149,8 +185,9 @@ describe('ProductAPIService', () => {
     const response = await service.buyProduct(
       'transactionID',
       'product1ID',
+      'Product 1',
       'customer@email.com',
-      1
+      1,
     );
 
     expect(response).toBe('paypal purchase called');
@@ -160,5 +197,11 @@ describe('ProductAPIService', () => {
     const response = await service.deleteProduct('product1ID');
 
     expect(response).toBe('delete called');
+  });
+
+  it('should get all product search tags', async () => {
+    const response = await service.getAllSearchTags();
+
+    expect(response).toEqual(mockSearchTags.searchTags);
   });
 });

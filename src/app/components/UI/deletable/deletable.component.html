@@ -1,11 +1,11 @@
 <div class="relative w-full overflow-hidden">
   <ng-content />
   <div
-    data-test-x-button
-    class="absolute top-[5%] right-[5%] w-[40px] h-[40px] sm:w-[50px] sm:h-[50px] flex justify-center items-center rounded-full text-destructive-foreground select-none transition-[transform,background-color] duration-500"
+    data-testid="x-button"
+    class="absolute top-[5%] right-[5%] w-[40px] h-[40px] sm:w-[50px] sm:h-[50px] flex justify-center items-center rounded-full bg-destructive text-destructive-foreground select-none transition-all duration-500"
     [ngClass]="{
-      'scale-[35] bg-destructive/80': deleteState,
-      'bg-destructive cursor-pointer': !deleteState
+      'scale-[35] opacity-80': deleteState,
+      'cursor-pointer': !deleteState
     }"
     (click)="!deleteState && onDelete.emit(true)"
   >
@@ -13,7 +13,7 @@
   </div>
   @if(deleteState) {
     <div 
-      data-test-overlay
+      data-testid="overlay"
       class="absolute top-0 left-0 w-full h-full flex flex-col gap-10 justify-center items-center text-center text-xs sm:text-base text-destructive-foreground font-bold transition-opacity duration-500 animate-fade-in"
     >
       <span class="p-2">Marked for deletion</span>

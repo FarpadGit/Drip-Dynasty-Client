@@ -25,7 +25,7 @@ describe('NumberInputComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
-  it('should display number with thousands separator', () => {
+  it('should display number with thousands separators', () => {
     inputElement.value = '1000';
     inputElement.dispatchEvent(new KeyboardEvent('keyup'));
     fixture.detectChanges();
@@ -48,5 +48,15 @@ describe('NumberInputComponent', () => {
 
     expect(component.numericValue).toBe(1n);
     expect(component.maskedValue).toBe('1');
+  });
+
+  it('should set the maximum numeric value', () => {
+    component.maxValue = 1000;
+    inputElement.value = '20000';
+    inputElement.dispatchEvent(new KeyboardEvent('keyup'));
+    fixture.detectChanges();
+
+    expect(component.numericValue).toBe(1000n);
+    expect(component.maskedValue).toBe('1 000');
   });
 });

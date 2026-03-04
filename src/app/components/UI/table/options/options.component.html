@@ -12,13 +12,13 @@
       [ngClass]="{'top-[10px]': side === 'top', 'bottom-[10px]': side === 'bottom'}">
       <!-- boxed feedback message if option failed -->
       @if(getErrorMessage() != undefined) {
-        <div class="absolute top-0 -left-[7.5rem] w-28 p-4 bg-white border border-[#DDDDDD] rounded text-destructive pointer-events-none z-50" data-test-error>
+        <div class="absolute top-0 -left-[7.5rem] w-28 p-4 bg-white border border-[#DDDDDD] rounded text-destructive pointer-events-none z-50" data-testid="error">
           {{getErrorMessage()}}
         </div>
       }
       <!-- boxed confirmation dialog with yes/no buttons -->
       @if (dialogOpen) {
-        <div class="absolute top-0 -translate-x-60 flex flex-col w-56 p-4 bg-white border border-[#DDDDDD] rounded z-50 cursor-default" data-test-dialog>
+        <div class="absolute top-0 -translate-x-60 flex flex-col w-56 p-4 bg-white border border-[#DDDDDD] rounded z-50 cursor-default" data-testid="dialog">
         {{getDialogMessage(dialogOpen)}}
         <div class="flex justify-around">
           <button class="ui-button" variant="primary" (click)="onDialogConfirm(dialogOpen)">Yes</button>
@@ -32,7 +32,7 @@
           <button [class]="'flex justify-center w-full py-3 px-0 disabled:line-through disabled:opacity-50 ' + option.styles" 
                   (click)="onSelect(option, $event)" 
                   [disabled]="option.error != undefined" 
-                  data-test-label>
+                  data-testid="label">
             {{option.label}}
           </button>
         </li>

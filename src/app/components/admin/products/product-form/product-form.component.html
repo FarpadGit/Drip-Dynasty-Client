@@ -1,23 +1,39 @@
-<h1 class="ui-header">{{userId == null ? 'Add a New Product' : 'Update Product'}}</h1>
-<p class="text-sm sm:text-base text-muted-foreground mb-8">All fields are <em>required</em> unless marked with a * symbol</p>
+<h1 class="ui-header">{{slug == null ? 'Add a New Product' : 'Update Product'}}</h1>
+<p class="text-sm sm:text-base text-muted-foreground mb-8">All fields marked with a * symbol are <em>required</em></p>
 <form class="space-y-8 text-sm sm:text-base" [formGroup]="productForm" (ngSubmit)="addOrUpdateProduct()">
   <div class="space-y-2" formGroupName="productInfo">
     <div class="space-y-2">
-      <label class="ui-label" for="name">Name</label>
+      <label class="ui-label" for="name">Name*</label>
       <input
         class="ui-input"
         type="text"
         id="name"
         name="name"
         formControlName="name"
-        [placeholder]="userId !== null && product == null ? 'loading details...' : ''"
+        [placeholder]="placeholderText"
         />
-        @if(productInfo.name.errors?.required && productInfo.name.touched) {
-          <div class="text-destructive">Product name is required</div>
-        }
+      @if(productInfo.name.errors?.['required'] && productInfo.name.touched) {
+        <div class="text-destructive">Product name is required</div>
+      }
     </div>
+
     <div class="space-y-2">
-      <label class="ui-label" for="description" (click)="editor.view.focus()">Description</label>
+      <label class="ui-label" for="name">Slug*</label>
+      <input
+        class="ui-input"
+        type="text"
+        id="slug"
+        name="slug"
+        formControlName="slug"
+        [placeholder]="placeholderText"
+        />
+      @if((productInfo.slug.errors?.['required'] || productInfo.slug.errors?.['pattern']) && productInfo.slug.touched) {
+        <div class="text-destructive">Product slug is required and must only contain lowercase characters and hyphens</div>
+      }
+    </div>
+
+    <div class="space-y-2">
+      <label class="ui-label" for="description" (click)="editor.view.focus()">Description*</label>
       <div class="NgxEditor__Wrapper">
         <ngx-editor-menu [editor]="editor" [toolbar]="toolbar"></ngx-editor-menu>
         <ngx-editor
@@ -25,51 +41,224 @@
           id="description"
           name="description" 
           formControlName="description"
-          [placeholder]="userId !== null && product == null ? 'loading details...' : ''">
+          [placeholder]="placeholderText">
         </ngx-editor>
       </div>
-      @if(productInfo.description.errors?.required && productInfo.description.touched) {
+      @if(productInfo.description.errors?.['required'] && productInfo.description.touched) {
         <div class="text-destructive">Please provide some description</div>
       }
     </div>
+
     <div class="space-y-2">
-      <label class="ui-label" for="categories">Categories*</label>
-      <textarea
-        class="ui-textarea"
-        id="categories"
-        name="categories"
-        formControlName="categories"
-        [placeholder]="userId !== null && product == null ? 'loading details...' : ''"
-      ></textarea>
-      <div class="text-muted-foreground">Categories can be optional but should be seperated by commas when provided.</div>
+      <label class="ui-label" for="categories_add">Categories</label>
+      <div class="flex flex-col gap-4" formArrayName="categories">
+        @for(category of categories; track category; let i = $index; let length = $count) {
+          <div class="flex gap-4">
+            <input
+              class="ui-input"
+              [id]="'categories_' + i"
+              [name]="'categories_' + i"
+              [formControlName]="i"
+            />
+            @if(length > 1) {
+              <button 
+                class="ui-button" 
+                variant="secondary"
+                type="button"
+                (click)="removeCategory(i)">
+                -
+              </button>
+            }
+          </div>
+        }
+      </div>
+      <button 
+        id="categories_add"
+        class="ui-button" 
+        variant="primary"
+        type="button" 
+        (click)="addNewCategory()">
+        Add New
+      </button>
     </div>
+
     <div class="space-y-2">
-      <label class="ui-label" for="extra">Extra info*</label>
+      <label class="ui-label" for="emailMessage">Email Message</label>
       <textarea
         class="ui-textarea"
         type="text"
-        id="extra"
-        name="extra"
-        formControlName="extra"
-        [placeholder]="userId !== null && product == null ? 'loading details...' : ''"
+        id="emailMessage"
+        name="emailMessage"
+        formControlName="emailMessage"
+        [placeholder]="placeholderText"
         ></textarea>
       <div class="text-muted-foreground">Additional info to display in email when a customer makes a purchase.</div>
     </div>
+
+    @if(productInfo.variants.controls.length === 0) {
+      <div class="space-y-2">
+        <label class="ui-label" for="stock">Stock</label>
+        <input
+          class="ui-input"
+          id="stock"
+          name="stock"
+          formControlName="defaultStock"
+          (input)="onStockChange($event)"
+          />
+        <div class="text-muted-foreground">Only applies if no variants are specified, otherwise set the stock value for each variant individually.</div>
+      </div>
+    }
+
+    <div class="space-y-2">
+      <label class="ui-label" for="variants_add">Variants</label>
+      <div class="flex flex-col gap-4 justify-center items-center" formArrayName="variants">
+        @for(variantGroup of variants; track variantGroup; let i = $index) {
+          <div class="grid grid-cols-[auto_1fr_1fr_2fr] w-2/3 gap-4" [formGroupName]="i">
+            <button 
+              class="ui-button self-end" 
+              variant="secondary" 
+              type="button" 
+              (click)="removeVariant(i)">
+              Remove Variant
+            </button>
+            <div class="space-y-2">
+              <label class="ui-label" [for]="'variants_name_' + i">Name</label>
+              <input
+                class="ui-input"
+                [id]="'variants_name_' + i"
+                [name]="'variants_name_' + i"
+                formControlName="groupName"
+              />
+            </div>
+            <div class="space-y-2">
+              <label class="ui-label" [for]="'variants_type_' + i">Type</label>
+              <select
+                class="ui-select"
+                [id]="'variants_type_' + i"
+                [name]="'variants_type_' + i"
+                formControlName="type"
+              >
+              <option value="text" [defaultSelected]="true">Text</option>
+              <option value="color">Color</option>
+            </select>
+            </div>
+            @for(variant of variantGroup.controls.variants.controls; track variant; let j = $index, length = $count) {
+              <div class="flex gap-4 -col-end-1" formArrayName="variants">
+                <div class="flex gap-4" [formGroupName]="j">
+                  <div class="space-y-2">
+                    <label class="ui-label" [for]="'variants_value_' + i + j">Value</label>
+                    <input
+                    class="ui-input"
+                    [id]="'variants_value_' + i + j"
+                    [name]="'variants_value_' + i + j"
+                    [attr.placeholder]="variantGroup.value.type === 'color' ? '#hexcode or \'red\'' : null"
+                    [formControl]="variant.controls.name"
+                    />
+                  </div>
+                  <div class="space-y-2">
+                    <label class="ui-label" [for]="'variants_stock_' + i + j">Stock</label>
+                    <input
+                    class="ui-input"
+                    [id]="'variants_stock_' + i + j"
+                    [name]="'variants_stock_' + i + j"
+                    [formControl]="variant.controls.stock"
+                    (input)="onStockChange($event)"
+                    />
+                  </div>
+                </div>
+                @if(length > 1) {
+                  <button 
+                    class="ui-button self-end" 
+                    variant="secondary" 
+                    type="button"
+                    (click)="removeFromVariant(variantGroup.controls.variants, j)">
+                    -
+                  </button>
+                }
+              </div>
+            }
+            <button 
+              class="ui-button w-fit -col-end-1" 
+              variant="primary" 
+              type="button" 
+              (click)="addToVariant(variantGroup.controls.variants)">
+              +
+            </button>
+          </div>
+        }
+        <button 
+          id="variants_add"
+          class="ui-button" 
+          variant="primary"
+          type="button" 
+          (click)="addNewVariant()">
+          Add New
+        </button>
+    </div>
+      <div class="text-muted-foreground">Additional properties such as size or color variations.</div>
+    </div>
+
+    <div class="space-y-2">
+      <label class="ui-label" for="tags_add">Search Tags</label>
+      <div class="flex flex-col gap-4 justify-center items-center" formArrayName="searchTags">
+        @for(tag of searchTags; track tag; let i = $index) {
+          <div class="grid grid-cols-[1fr_1fr_auto] w-1/2 gap-4" [formGroupName]="i">
+            <div class="space-y-2">
+              <label class="ui-label" [for]="'tags_name_' + i">Name</label>
+              <input
+                class="ui-input"
+                [id]="'tags_name_' + i"
+                [name]="'tags_name_' + i"
+                formControlName="name"
+              />
+            </div>
+            <div class="space-y-2">
+              <label class="ui-label" [for]="'tags_value_' + i">Value</label>
+              <input
+                class="ui-input"
+                [id]="'tags_value_' + i"
+                [name]="'tags_value_' + i"
+                formControlName="value"
+              />
+            </div>
+            <button 
+              class="ui-button self-end" 
+              variant="secondary"
+              type="button" 
+              (click)="removeSearchTag(i)">
+              -
+            </button>
+          </div>
+        }
+        <button 
+          id="tags_add"
+          class="ui-button" 
+          variant="primary"
+          type="button" 
+          (click)="addNewSearchTag()">
+          Add New
+        </button>
+    </div>
+      <div class="text-muted-foreground">Optional tags users can filter by on the Products page.</div>
+    </div>
+
     <div class="space-y-2">
       <ui-number-input
-        [title]="'Price'"
+        title="Price*"
+        name="price"
         formControlName="price"
         />
-        @if(productInfo.price.errors?.required || productInfo.price.errors?.pattern) {
+        @if(productInfo.price.errors?.['required'] || productInfo.price.errors?.['pattern']) {
           <div class="text-destructive">Please set a non-zero price with only numbers</div>
         }
-        @if(productInfo.price.errors?.min) {
+        @if(productInfo.price.errors?.['min']) {
           <div class="text-destructive">Product price must be greater then zero</div>
         }
     </div>
   </div>
+
   <div class="space-y-2">
-    <label class="ui-label" for="discount">Discount*</label>
+    <label class="ui-label" for="discount">Discount</label>
     <div class="flex gap-4" formGroupName="discount">
       <ui-switch
         [name]="'discount'"
@@ -81,9 +270,9 @@
             <div class="flex flex-col sm:flex-row items-center gap-4">
               <ui-number-input
                 class="w-full"
-                [title]="'Discount'"
+                name="discount"
                 [labelHidden]="true"
-                [maxValue]="productInfo.price.value"
+                [maxValue]="productInfo.price.value || 1"
                 formControlName="discountValue"
                 />
                 {{" or "}}
@@ -106,15 +295,16 @@
           </div>
         }
     </div>
-    @if(discount.errors?.min || discount.errors?.pattern) {
+    @if(form.discount.errors?.['min'] || form.discount.errors?.['pattern']) {
       <div class="text-destructive">If you don't want to set a discount use the toggle switch</div>
     }
   </div>
+
   <div class="space-y-2">
-    @if(form.images.errors?.requiredFileType) {
+    @if(form.images.errors?.['requiredFileType']) {
       <div class="text-destructive">Product images can only be of the following files: {{this.requiredFileTypes.join(', ')}}</div>
     }
-    <label class="ui-label" for="image">Images</label>
+    <label class="ui-label" for="image">Images*</label>
     <ui-file-upload [name]="'image'" formControlName="images" [acceptedTypes]="requiredFileTypes" [defaultValues]="imagePaths" (onChange)="handleFilesChanged($event)"></ui-file-upload>
     <div class="grid grid-cols-2 sm:grid-cols-3 grid-rows-{{imagePreviewRows}} gap-2">
       @for(imagePreview of imagePreviews; track imagePreview; let i = $index) {
@@ -132,12 +322,13 @@
       }
     </div>
   </div>
+
   <div class="flex gap-4">
     <button class="ui-button" variant="secondary" type="button" (click)="onCancel()">
       Cancel
     </button>
     <button class="ui-button" variant="primary" type="submit" 
-      [disabled]="productForm.controls.productInfo.invalid || imagePaths.length === 0"
+      [disabled]="submitDisabled"
       (click)="validSubmit = true">
       OK
     </button>

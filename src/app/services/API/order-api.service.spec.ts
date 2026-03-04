@@ -2,7 +2,6 @@ import { TestBed } from '@angular/core/testing';
 
 import { OrderAPIService } from './order-api.service';
 import { EnvService } from '../env.service';
-import { orderType } from '../../types';
 import { mockOrders } from '../../../test/mocks';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';

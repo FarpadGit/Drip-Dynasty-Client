@@ -8,6 +8,8 @@ import {
   mockProducts,
   mockPaginatedProductsPage1,
   mockPaginatedProductsPage2,
+  mockOrderWithVariant,
+  mockSearchTags,
 } from '../../test/mocks';
 
 describe('ProductService', () => {
@@ -37,29 +39,31 @@ describe('ProductService', () => {
     apiSpy = jasmine.createSpyObj('ProductAPIService', [
       'getProducts',
       'getProduct',
+      'getProductBySlug',
       'getNewestProducts',
       'getMostPopularProducts',
       'addNewProduct',
       'updateProduct',
       'buyProduct',
       'deleteProduct',
+      'getAllSearchTags',
     ]);
 
+    apiSpy.getProducts.withArgs().and.resolveTo(paginatedResponsePage1);
     apiSpy.getProducts
-      .withArgs(undefined, undefined)
-      .and.resolveTo(paginatedResponsePage1);
-    apiSpy.getProducts
-      .withArgs(undefined, 2)
+      .withArgs({ page: 2 })
       .and.resolveTo(paginatedResponsePage2);
     apiSpy.getProducts
-      .withArgs('some category', undefined)
+      .withArgs({ category: 'some category' })
       .and.resolveTo(paginatedResponseforCategory);
     apiSpy.getProduct.withArgs('productID1').and.resolveTo({ ...mockProduct });
     apiSpy.getProduct
       .withArgs('badProductID')
       .and.resolveTo({ error: 'error' });
+    apiSpy.getProductBySlug.withArgs('productSlug1').and.resolveTo(mockProduct);
     apiSpy.getNewestProducts.and.resolveTo(mockNewestProducts);
     apiSpy.getMostPopularProducts.and.resolveTo(mockPopularProducts);
+    apiSpy.getAllSearchTags.and.resolveTo(mockSearchTags);
 
     TestBed.configureTestingModule({
       providers: [{ provide: ProductAPIService, useValue: apiSpy }],
@@ -71,8 +75,8 @@ describe('ProductService', () => {
     expect(service).toBeTruthy();
   });
 
-  describe('should return list of products after fetching from service', () => {
-    it('if "page" is undefined', async () => {
+  describe('should return a list of products after fetching from service', () => {
+    it('if no filters are provided', async () => {
       await service.fetchProducts();
 
       expect(service.getProducts()).toEqual({
@@ -84,7 +88,7 @@ describe('ProductService', () => {
     });
 
     it('if "page" is 2', async () => {
-      await service.fetchProducts(undefined, 2);
+      await service.fetchProducts({ page: 2 });
 
       expect(service.getProducts()).toEqual({
         value: paginatedResponsePage2.products,
@@ -94,7 +98,7 @@ describe('ProductService', () => {
       expect(apiSpy.getProducts).toHaveBeenCalled();
     });
 
-    it('if "query" is "newest"', async () => {
+    it('if query is "newest"', async () => {
       await service.fetchProducts('newest');
 
       expect(service.getProducts()).toEqual({
@@ -105,7 +109,7 @@ describe('ProductService', () => {
       expect(apiSpy.getNewestProducts).toHaveBeenCalled();
     });
 
-    it('if "query" is "popular"', async () => {
+    it('if query is "popular"', async () => {
       await service.fetchProducts('popular');
 
       expect(service.getProducts()).toEqual({
@@ -116,8 +120,8 @@ describe('ProductService', () => {
       expect(apiSpy.getMostPopularProducts).toHaveBeenCalled();
     });
 
-    it('if "query" is a category string', async () => {
-      await service.fetchProducts('some category');
+    it('if filter has a category string', async () => {
+      await service.fetchProducts({ category: 'some category' });
 
       expect(service.getProducts()).toEqual({
         value: paginatedResponseforCategory.products,
@@ -128,11 +132,18 @@ describe('ProductService', () => {
     });
   });
 
-  it('should return single product after fetching from service', async () => {
+  it('should return a single product by ID', async () => {
     const response = await service.getProduct('productID1');
 
     expect(response).toEqual(mockProduct);
     expect(apiSpy.getProduct).toHaveBeenCalled();
+  });
+
+  it('should return a single product by slug', async () => {
+    const response = await service.getProductBySlug('productSlug1');
+
+    expect(response).toEqual(mockProduct);
+    expect(apiSpy.getProductBySlug).toHaveBeenCalled();
   });
 
   it('should call addProduct if new product is added', async () => {
@@ -150,7 +161,7 @@ describe('ProductService', () => {
         discount: 999,
       },
       [{ file: newFile, path: 'newFile.jpg' }],
-      [mockProduct.imagePaths[0]]
+      [mockProduct.imagePaths[0]],
     );
 
     expect(apiSpy.updateProduct).toHaveBeenCalledOnceWith(
@@ -162,7 +173,7 @@ describe('ProductService', () => {
         imagePaths: ['newFile.jpg'],
       },
       [newFile],
-      [mockProduct.imagePaths[0]]
+      [mockProduct.imagePaths[0]],
     );
   });
 
@@ -186,14 +197,17 @@ describe('ProductService', () => {
     await service.buyProduct(
       mockProduct,
       'customer@email.com',
-      'transactionID'
+      'transactionID',
+      mockOrderWithVariant.variants,
     );
 
     expect(apiSpy.buyProduct).toHaveBeenCalledOnceWith(
       'transactionID',
       mockProduct.id,
+      mockProduct.name,
       'customer@email.com',
-      mockProduct.price
+      mockProduct.price,
+      mockOrderWithVariant.variants,
     );
   });
 
@@ -201,5 +215,45 @@ describe('ProductService', () => {
     await service.deleteProduct('some ID');
 
     expect(apiSpy.deleteProduct).toHaveBeenCalledOnceWith('some ID');
+  });
+
+  it('should call getAllSearchTags if product search tags are being requested', async () => {
+    const response = await service.getAllSearchTags();
+
+    expect(response).toEqual({
+      searchTags: jasmine.any(Array<productType['searchTags']>),
+      maxPrice: jasmine.any(Number),
+    });
+    expect(apiSpy.getAllSearchTags).toHaveBeenCalled();
+  });
+
+  it('should correctly calculate if a given product is out of stock', () => {
+    const response1 = ProductService.isOutOfStock({
+      ...mockProduct,
+      defaultStock: 0,
+    });
+    const response2 = ProductService.isOutOfStock({
+      ...mockProduct,
+      defaultStock: 10,
+    });
+    const response3 = ProductService.isOutOfStock({
+      ...mockProduct,
+      defaultStock: 10,
+      variants: [
+        { groupName: '', type: 'text', variants: [{ name: '', stock: 0 }] },
+      ],
+    });
+    const response4 = ProductService.isOutOfStock({
+      ...mockProduct,
+      defaultStock: 0,
+      variants: [
+        { groupName: '', type: 'text', variants: [{ name: '', stock: 10 }] },
+      ],
+    });
+
+    expect(response1).toBeTrue();
+    expect(response2).toBeFalse();
+    expect(response3).toBeTrue();
+    expect(response4).toBeFalse();
   });
 });

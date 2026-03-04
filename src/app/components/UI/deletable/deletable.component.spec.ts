@@ -17,7 +17,7 @@ describe('DeletableComponent', () => {
     component = fixture.componentInstance;
     component.deleteState = false;
     XButton = fixture.debugElement.nativeElement.querySelector(
-      '[data-test-x-button]'
+      '[data-testid="x-button"]',
     );
     fixture.detectChanges();
   });
@@ -35,7 +35,7 @@ describe('DeletableComponent', () => {
     fixture.detectChanges();
 
     overlay = fixture.debugElement.nativeElement.querySelector(
-      '[data-test-overlay]'
+      '[data-testid="overlay"]',
     );
 
     expect(overlay).toBeTruthy();
@@ -59,7 +59,7 @@ describe('DeletableComponent', () => {
     fixture.detectChanges();
 
     overlay = fixture.debugElement.nativeElement.querySelector(
-      '[data-test-overlay]'
+      '[data-testid="overlay"]',
     );
     (overlay.querySelector('button') as HTMLButtonElement).click();
     fixture.detectChanges();

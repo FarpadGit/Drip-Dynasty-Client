@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { APIService } from './api.service';
-import { parseProductJSON } from '../../utils/converters';
+import { parseOrderJSON } from '../../utils/converters';
 
 @Injectable({
   providedIn: 'root',
@@ -8,7 +8,7 @@ import { parseProductJSON } from '../../utils/converters';
 export class OrderAPIService extends APIService {
   async getOrders() {
     return this.makeRequest('/orders').then((ps) =>
-      !ps.error ? ps.map((p: any) => parseProductJSON(p)) : ps
+      !ps.error ? ps.map((p: any) => parseOrderJSON(p)) : ps,
     );
   }
 

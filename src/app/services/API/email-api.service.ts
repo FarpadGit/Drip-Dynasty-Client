@@ -6,7 +6,7 @@ import { APIService } from './api.service';
 })
 export class EmailApiService extends APIService {
   async sendOrderHistory(email: string) {
-    return this.makeRequest('/email/orderHistory', {
+    return this.makeRequest('/email/order-history', {
       method: 'POST',
       data: { id: '', email, orders: [] },
     });

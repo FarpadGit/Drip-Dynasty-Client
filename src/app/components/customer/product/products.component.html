@@ -1,40 +1,66 @@
 <ui-section-head>{{plural(category) ?? "Our catalog"}}</ui-section-head>
-<div class="relative grid grid-cols-2 [@media(min-width:580px)_and_(max-width:639px)]:grid-cols-3 md:grid-cols-3 xl:grid-cols-4 gap-x-4 gap-y-10 pt-4 pb-8 min-h-screen">
-  <div class="absolute -left-8 -top-8 w-[calc(100%+4rem)] h-full min-h-[635px] bg-product-grid bg-repeat-y bg-contain brightness-50"></div>
-  @if(isLoading) {
-    <div class="h-screen col-span-full flex justify-center items-center">
-      <ui-spinner />
-    </div>
-  }
-  @else if(hasError) {
-    <div data-test-error-msg class="flex justify-center text-3xl">Our servers are down at the moment, please check back at a later time</div>
-  }
-  @else {
-    @if(activeProducts.value?.length === 0) {
-      <div data-test-empty-msg class="col-span-full flex justify-center text-3xl">Our catalog is currently under maintenance, please check back at a later time</div>
-    }
-    @else {
-      @for(product of activeProducts.value; track product.id; let i = $index) {
-        <ui-product-card [product]="product" [animDelay]="i * 100" class="drop-shadow-green-dark"></ui-product-card>
+
+  <!-- Sorting Select -->
+  <div class="flex justify-center sm:justify-end w-full max-md:py-4 2xl:pr-4">
+    <select id="sort" class="relative bg-background border-gradient-orange p-2 z-10" (change)="handleSortChanged($event)">
+      @for (option of sortingOptions; track option.value) {
+        <option [value]="option.value" [defaultSelected]="option.default">{{ option.label }}</option>
       }
-    }
-  }
-</div>
-<!-- Paginator -->
- @if(pages.length > 1) {
-  <div class="w-full flex justify-center gap-8">
-    <ui-nav-button button [disabled]="!hasPrev" [href]="currentUrl" [queryParams]="{'page': page - 1}">Prev</ui-nav-button>
-    @for(pageNum of pages; track pageNum) {
-      <ui-nav-button
-        class="select-none hover:underline"
-        [ngClass]="{'text-leading hover:no-underline': pageNum === page}"
-        [disabled]="pageNum === page" 
-        [href]="currentUrl" 
-        [queryParams]="{'page': pageNum}"
-        >
-          {{pageNum + 1}}
-      </ui-nav-button>
-    }
-    <ui-nav-button button [disabled]="!hasNext" [href]="currentUrl" [queryParams]="{'page': page + 1}">Next</ui-nav-button>
+    </select>
   </div>
- }
+
+  <div class="grid grid-cols-1 grid-rows-[auto_1fr] md:grid-cols-[auto_1fr] md:grid-rows-1 gap-4 max-md:mt-4">
+  <!-- Filters Sidebar -->
+  <app-filters 
+    class="relative max-md:border-b-2 md:border-r-4 border-primary z-10"
+    [defaultOpen]="!isMobile"
+    [collapse]="isMobile ? 'vertical' : 'horizontal'"
+    (onChange)="handleFiltersChanged()"/>
+
+  <!-- Product Grid -->
+  <div class="@container">
+    <div class="relative grid grid-cols-1 [@container(min-width:17rem)]:grid-cols-2 [@container(36.5rem_<=_width_<=_40rem)]:!grid-cols-3 @3xl:!grid-cols-3 @7xl:!grid-cols-4 gap-x-4 gap-y-10 pt-4 pb-8 min-h-screen">
+      <div class="absolute -left-8 -top-8 w-[calc(100%+4rem)] h-full min-h-[635px] bg-product-grid bg-repeat-y bg-contain brightness-50"></div>
+      @if(isLoading) {
+        <div class="h-screen col-span-full flex justify-center items-center">
+          <ui-spinner />
+        </div>
+      }
+      @else if(hasError) {
+        <div data-testid="error-msg" class="flex justify-center text-3xl">Our servers are down at the moment, please check back at a later time</div>
+      }
+      @else {
+        @if(activeProducts?.value?.length === 0) {
+          <div data-testid="empty-msg" class="col-span-full flex justify-center text-3xl">No items were found matching your criteria, try expanding your search</div>
+        }
+        @else {
+          @for(product of products; track product.id; let i = $index) {
+            <ui-product-card [product]="product" [animDelay]="i * 100" class="flex justify-center drop-shadow-primary-dark"></ui-product-card>
+          }
+        }
+      }
+    </div>
+
+    <!-- Paginator -->
+    @if(pages.length > 1) {
+      <div class="relative w-full flex justify-center items-center gap-8 z-10" data-testid="paginator">
+        <button class="ui-button" [disabled]="!hasPrev" variant="leading" (click)="loadPrevPage()">Prev</button>
+        @for(pageNum of pages; track pageNum) {
+          @if(pageNum < 0) {
+            <span>...</span>
+          } @else {
+            <button
+              class="select-none hover:underline w-5"
+              [ngClass]="{'text-leading hover:no-underline': pageNum === page}"
+              [disabled]="pageNum === page" 
+              (click)="gotoPage(pageNum)"
+              >
+                {{pageNum + 1}}
+            </button>
+          }
+        }
+        <button class="ui-button" [disabled]="!hasNext" variant="leading" (click)="loadNextPage()">Next</button>
+      </div>
+    }
+  </div>
+</div>

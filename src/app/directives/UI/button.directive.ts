@@ -11,16 +11,16 @@ export class ButtonDirective implements AfterContentInit {
     switch (value) {
       case 'primary':
         this.variantClasses =
-          'bg-primary text-primary-foreground hover:bg-primary/80';
+          'bg-button-primary text-button-primary-foreground hover:bg-button-primary hover:opacity-80';
         break;
       case 'secondary':
         this.variantClasses =
-          'bg-secondary text-secondary-foreground hover:bg-secondary/80 hover:brightness-50';
+          'bg-button-secondary text-button-secondary-foreground hover:bg-button-secondary hover:opacity-80 hover:brightness-50';
         break;
       case 'leading':
       default:
         this.variantClasses =
-          'bg-leading text-leading-foreground enabled:shadow-leading hover:bg-leading/80';
+          'bg-button-leading text-button-leading-foreground enabled:shadow-button-leading hover:bg-button-leading hover:opacity-80';
         break;
     }
   }

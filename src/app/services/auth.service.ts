@@ -15,7 +15,7 @@ export class AuthService {
     private APIService: APIService,
     private axiosService: AxiosService,
     private cookieService: CookieService,
-    private router: Router
+    private router: Router,
   ) {}
 
   async login(username: string, password: string) {

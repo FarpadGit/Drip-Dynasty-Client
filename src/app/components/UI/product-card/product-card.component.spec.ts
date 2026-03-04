@@ -4,6 +4,8 @@ import { ProductCardComponent } from './product-card.component';
 import {
   mockNewProduct,
   mockOldProduct,
+  mockProductInStock,
+  mockProductOutOfStock,
   mockProductWithDiscount,
   mockProductWithoutDiscount,
 } from '../../../../test/mocks';
@@ -17,7 +19,7 @@ describe('ProductCardComponent', () => {
 
   function getAllBadgeElements() {
     const badgeNodes = fixture.debugElement.nativeElement.querySelectorAll(
-      '[data-test-badge-content]'
+      '[data-testid="badge-content"]',
     ) as NodeList;
     return Array.from(badgeNodes);
   }
@@ -48,20 +50,20 @@ describe('ProductCardComponent', () => {
 
   function shouldDisplayProductInfo() {
     const nameElement = fixture.debugElement.nativeElement.querySelector(
-      '[data-test-name]'
+      '[data-testid="name"]',
     ) as HTMLElement;
     const categoryElements =
       fixture.debugElement.nativeElement.querySelectorAll(
-        '[data-test-category]'
+        '[data-testid="category"]',
       ) as NodeList;
     const priceElement = fixture.debugElement.nativeElement.querySelector(
-      '[data-test-price]'
+      '[data-testid="price"]',
     ) as HTMLElement;
     const oldPriceElement = fixture.debugElement.nativeElement.querySelector(
-      '[data-test-old-price]'
+      '[data-testid="old-price"]',
     ) as HTMLElement;
     const imageElement = fixture.debugElement.nativeElement.querySelector(
-      'img'
+      'img',
     ) as HTMLImageElement;
 
     //
@@ -75,7 +77,7 @@ describe('ProductCardComponent', () => {
         .toBeFalsy();
     } else {
       const categories = Array.from(categoryElements).map(
-        (category) => category.textContent as string
+        (category) => category.textContent as string,
       );
       expect(categories)
         .withContext('categories mismatch')
@@ -106,7 +108,7 @@ describe('ProductCardComponent', () => {
     }
 
     expect(
-      imageElement.src.includes(component.product.imagePaths[0])
+      imageElement.src.includes(component.product.imagePaths[0]),
     ).toBeTrue();
   }
 
@@ -121,7 +123,7 @@ describe('ProductCardComponent', () => {
   it('should diplay a "New" badge if product is younger than 7 days', () => {
     const badges = getAllBadgeElements();
     const newBadgeExists = badges.some(
-      (badge) => badge.textContent?.toLowerCase() === 'new'
+      (badge) => badge.textContent?.toLowerCase() === 'new',
     );
 
     expect(newBadgeExists).toBeTrue();
@@ -132,7 +134,7 @@ describe('ProductCardComponent', () => {
     fixture.detectChanges();
     const badges = getAllBadgeElements();
     const newBadgeExists = badges.some(
-      (badge) => badge.textContent?.toLowerCase() === 'new'
+      (badge) => badge.textContent?.toLowerCase() === 'new',
     );
 
     expect(newBadgeExists).toBeFalse();
@@ -142,8 +144,8 @@ describe('ProductCardComponent', () => {
     component.product = mockProductWithDiscount;
     fixture.detectChanges();
     const badges = getAllBadgeElements();
-    const saleBadgeExists = badges.some(
-      (badge) => badge.textContent?.toLowerCase() === 'sale'
+    const saleBadgeExists = badges.some((badge) =>
+      badge.textContent?.toLowerCase().includes('sale'),
     );
 
     expect(saleBadgeExists).toBeTrue();
@@ -153,8 +155,30 @@ describe('ProductCardComponent', () => {
     component.product = mockProductWithoutDiscount;
     fixture.detectChanges();
     const badges = getAllBadgeElements();
+    const saleBadgeExists = badges.some((badge) =>
+      badge.textContent?.toLowerCase().includes('sale'),
+    );
+
+    expect(saleBadgeExists).toBeFalse();
+  });
+
+  it('should diplay an "Out of Stock" badge if product is out of stock', () => {
+    component.product = mockProductOutOfStock;
+    fixture.detectChanges();
+    const badges = getAllBadgeElements();
     const saleBadgeExists = badges.some(
-      (badge) => badge.textContent?.toLowerCase() === 'sale'
+      (badge) => badge.textContent?.toLowerCase() === 'out of stock',
+    );
+
+    expect(saleBadgeExists).toBeTrue();
+  });
+
+  it('should not diplay an "Out of Stock" badge if product is in stock', () => {
+    component.product = mockProductInStock;
+    fixture.detectChanges();
+    const badges = getAllBadgeElements();
+    const saleBadgeExists = badges.some(
+      (badge) => badge.textContent?.toLowerCase() === 'out of stock',
     );
 
     expect(saleBadgeExists).toBeFalse();

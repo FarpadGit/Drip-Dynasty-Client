@@ -8,12 +8,6 @@ import { ProductService } from '../../../services/product.service';
 import { OrderService } from '../../../services/order.service';
 import { APIService } from '../../../services/API/api.service';
 import {
-  asyncType,
-  customerType,
-  orderType,
-  productType,
-} from '../../../types';
-import {
   mockProducts,
   mockCustomers,
   mockOrders,
@@ -91,7 +85,7 @@ describe('DashboardComponent (Admin facing)', () => {
       .map((order) => order.pricePaid)
       .reduce((sum, p) => (sum += p));
     const avarageFlooredSalesValue = Math.floor(
-      totalSales / mockCustomers.length
+      totalSales / mockCustomers.length,
     );
     const activeProducts = mockProducts
       .map((product) => (product.isActive ? 1 : 0))
@@ -125,12 +119,12 @@ describe('DashboardComponent (Admin facing)', () => {
 
   it('should call resetDB from service if reset button is pressed and confirmed', () => {
     const resetButton = rootElement.querySelector(
-      '[data-test-reset-btn]'
+      '[data-testid="reset-btn"]',
     ) as HTMLButtonElement;
     resetButton.click();
     fixture.detectChanges();
     const confirmButton = rootElement.querySelector(
-      '[data-test-confirm-btn]'
+      '[data-testid="confirm-btn"]',
     ) as HTMLButtonElement;
 
     confirmButton.click();
@@ -141,12 +135,12 @@ describe('DashboardComponent (Admin facing)', () => {
 
   it('should not call resetDB from service if reset button is pressed but canceled', () => {
     const resetButton = rootElement.querySelector(
-      '[data-test-reset-btn]'
+      '[data-testid="reset-btn"]',
     ) as HTMLButtonElement;
     resetButton.click();
     fixture.detectChanges();
     const confirmButton = rootElement.querySelector(
-      '[data-test-cancel-btn]'
+      '[data-testid="cancel-btn"]',
     ) as HTMLButtonElement;
 
     confirmButton.click();

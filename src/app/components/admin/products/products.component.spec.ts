@@ -6,7 +6,6 @@ import { NavButtonComponent } from '../../UI/nav-button.component';
 import { ProductService } from '../../../services/product.service';
 import { mockProducts } from '../../../../test/mocks';
 import { getNumberValueFromText } from '../../../../test/test-utils';
-import { asyncType, productType } from '../../../types';
 import { MockNavButtonComponent } from '../../../../test/mockComponents';
 
 describe('ProductsComponent (Admin facing)', () => {
@@ -17,6 +16,7 @@ describe('ProductsComponent (Admin facing)', () => {
 
   beforeEach(async () => {
     productSpy = jasmine.createSpyObj('ProductService', [
+      'getProduct',
       'getProducts',
       'fetchProducts',
       'deleteProduct',
@@ -30,6 +30,8 @@ describe('ProductsComponent (Admin facing)', () => {
       isLoading: false,
       hasError: false,
     } as asyncType<productType[]>);
+
+    productSpy.getProduct.and.resolveTo(mockProducts[0]);
 
     productSpy.toggleProductActivation.and.resolveTo(true);
 
@@ -86,12 +88,12 @@ describe('ProductsComponent (Admin facing)', () => {
           : getNumberValueFromText(row.cells[3] as string),
       orders: row.cells[4],
       options: row.options?.map((option) =>
-        typeof option === 'string' ? option : option.id
+        typeof option === 'string' ? option : option.id,
       ),
     }));
 
     const sortedMockProducts = [...mockProducts].sort(
-      (a, b) => a.createdSince - b.createdSince
+      (a, b) => a.createdSince - b.createdSince,
     );
     const expectedCells = sortedMockProducts.map((product) => ({
       active: jasmine.stringContaining('ICON'),
@@ -105,30 +107,30 @@ describe('ProductsComponent (Admin facing)', () => {
     expect(cellsOfImportance).toEqual(expectedCells);
   });
 
-  it('should navigate to edit page if edit option was selected', () => {
-    component.handleSelectedOption({
+  it('should navigate to edit page if edit option was selected', async () => {
+    await component.handleSelectedOption({
       itemId: 'fakeCustomerID',
       option: { id: 'edit', label: '' },
     });
 
     expect(routerSpy.navigate).toHaveBeenCalledWith([
-      'admin/products/fakeCustomerID/edit',
+      `admin/products/${mockProducts[0].slug}/edit`,
     ]);
   });
 
-  it('should call toggleProductActivation if toggle option was selected', () => {
-    component.handleSelectedOption({
+  it('should call toggleProductActivation if toggle option was selected', async () => {
+    await component.handleSelectedOption({
       itemId: 'fakeCustomerID',
       option: { id: 'toggleActivate', label: '' },
     });
 
     expect(productSpy.toggleProductActivation).toHaveBeenCalledWith(
-      'fakeCustomerID'
+      'fakeCustomerID',
     );
   });
 
-  it('should call deleteProduct if delete option was selected', () => {
-    component.handleSelectedOption({
+  it('should call deleteProduct if delete option was selected', async () => {
+    await component.handleSelectedOption({
       itemId: 'fakeCustomerID',
       option: { id: 'delete', label: '' },
     });

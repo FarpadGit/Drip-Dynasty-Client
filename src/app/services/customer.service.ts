@@ -1,5 +1,4 @@
 import { Injectable, signal } from '@angular/core';
-import { asyncType, customerType } from '../types';
 import { CustomerAPIService } from './API/customer-api.service';
 
 @Injectable({

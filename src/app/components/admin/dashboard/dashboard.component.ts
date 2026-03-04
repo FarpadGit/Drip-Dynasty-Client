@@ -7,12 +7,6 @@ import { CardComponent } from './card.component';
 import { ConfirmModalComponent } from './confirm-modal.component';
 import { ButtonDirective } from '../../../directives/UI/button.directive';
 import { formatCurrency, formatNumber } from '../../../utils/formatters';
-import {
-  asyncType,
-  customerType,
-  orderType,
-  productType,
-} from '../../../types';
 
 @Component({
   selector: 'app-dashboard',
@@ -57,7 +51,7 @@ export class DashboardComponent {
     private productService: ProductService,
     private customerService: CustomerService,
     private orderService: OrderService,
-    private APIService: APIService
+    private APIService: APIService,
   ) {
     this.productService.fetchProducts('all');
     this.customerService.fetchCustomers();
@@ -130,7 +124,8 @@ export class DashboardComponent {
     return formatNumber(this.activeProducts);
   }
 
-  private resetDB() {
-    this.APIService.resetDB();
+  private async resetDB() {
+    await this.APIService.resetDB();
+    await this.productService.fetchProducts('all');
   }
 }

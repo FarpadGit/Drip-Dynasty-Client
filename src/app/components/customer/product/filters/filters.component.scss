@@ -1,0 +1,80 @@
+// We need to use ::ng-deep to overcome view encapsulation
+::ng-deep {
+    app-filters .ngx-slider {
+        $height: 10px;
+        height: $height;
+
+        .ngx-slider-left-out-selection, .ngx-slider-right-out-selection {
+            z-index: 10;
+            pointer-events: none;
+
+            .ngx-slider-bar {
+                background-color: rgba(0, 0, 0, 0.5) !important;
+                height: $height;
+            }
+        }
+        .ngx-slider-full-bar {
+            .ngx-slider-bar {
+                background-image: url("/assets/separator-green.png") !important;
+                background-color: transparent !important;
+                background-size: calc(100% - 20px) !important;
+                background-repeat: no-repeat !important;
+                mix-blend-mode: color;
+                height: $height;
+
+                @media (min-width: 768px) {
+                    background-size: 290px !important;
+                }
+            }
+        }
+
+        .ngx-slider-selection {
+            background: none;
+            height: $height;
+        }
+
+        .ngx-slider-pointer {
+            width: 22px;
+            height: 22px;
+            top: auto; /* to remove the default positioning */
+            bottom: -50%;
+            background-color: var(--secondary);
+            border-radius: 0;
+            clip-path: polygon(45% 0%, 100% 0, 55% 100%, 0% 100%);
+            z-index: 10;
+            
+            &.ngx-slider-active {
+                outline: none;
+                z-index: 20;
+
+                &::after, &:hover::after {
+                    background-color: var(--secondary);
+                }
+            }
+
+            &:hover::after {
+                background-color: var(--secondary-dark);
+            }
+
+            &::after {
+                width: 18px;
+                height: 18px;
+                top: 2px;
+                left: 2px;
+                background-color: black;
+                clip-path: polygon(45% 0%, 100% 0, 55% 100%, 0% 100%);
+            }
+        }
+
+        .ngx-slider-bubble {
+            bottom: 20px;
+            font-family: var(--raitor);
+            color: white !important;
+            font-size: 0.6rem;
+
+            @media (min-width: 640px) {
+                font-size: 0.8rem;
+            }
+        }
+    }
+}

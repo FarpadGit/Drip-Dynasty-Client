@@ -15,7 +15,7 @@ describe('EmailApiService', () => {
 
   beforeEach(() => {
     mockAxios.reset();
-    mockAxios.onPost('/email/orderHistory').reply(200, 'orderHistory called');
+    mockAxios.onPost('/email/order-history').reply(200, 'orderHistory called');
 
     const envSpy = jasmine.createSpyObj('EnvService', [], {
       env: { NG_APP_SERVER_URL: '' },

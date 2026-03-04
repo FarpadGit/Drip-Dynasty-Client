@@ -1,14 +1,15 @@
 import { of } from 'rxjs';
-import { customerType, orderType, productType } from '../app/types';
 import { tableOptionType } from '../app/components/UI/table/table.component';
 
 export const mockProducts: productType[] = [
   {
     id: 'product1ID',
     name: 'product1',
+    slug: 'product-1',
     description: 'description1',
     categories: ['category1'],
     price: 1,
+    defaultStock: 10,
     isActive: true,
     createdSince: 0,
     discount: 0,
@@ -17,9 +18,11 @@ export const mockProducts: productType[] = [
   {
     id: 'product2ID',
     name: 'product2',
+    slug: 'product-2',
     description: 'description2',
     categories: ['category2', 'category3'],
     price: 10,
+    defaultStock: 10,
     isActive: false,
     createdSince: 0,
     discount: 0,
@@ -28,9 +31,11 @@ export const mockProducts: productType[] = [
   {
     id: 'product3ID',
     name: 'product3',
+    slug: 'product-3',
     description: 'description3',
     categories: ['category1'],
     price: 100,
+    defaultStock: 10,
     isActive: true,
     createdSince: 10 * 24 * 60 * 60 * 1000,
     discount: 10,
@@ -39,9 +44,11 @@ export const mockProducts: productType[] = [
   {
     id: 'product4ID',
     name: 'product4',
+    slug: 'product-4',
     description: 'description4',
     categories: ['category4', 'category5', 'category6'],
     price: 1000,
+    defaultStock: 0,
     isActive: true,
     createdSince: 1 * 24 * 60 * 60 * 1000,
     discount: 0,
@@ -50,9 +57,11 @@ export const mockProducts: productType[] = [
   {
     id: 'product5ID',
     name: 'product5',
+    slug: 'product-5',
     description: 'description5',
     categories: ['category2', 'category7'],
     price: 10000,
+    defaultStock: 10,
     isActive: false,
     createdSince: 0,
     discount: 100,
@@ -68,6 +77,10 @@ export const mockProductWithDiscount = mockProducts[4];
 
 export const mockProductWithoutDiscount = mockProducts[0];
 
+export const mockProductInStock = mockProducts[0];
+
+export const mockProductOutOfStock = mockProducts[3];
+
 export const mockNewProduct = mockProducts[0];
 
 export const mockOldProduct = mockProducts[2];
@@ -76,8 +89,10 @@ export const mockNewestProducts: productType[] = [
   {
     id: 'newProduct1ID',
     name: 'new Product 1',
+    slug: 'new-product-1',
     description: 'description1',
     price: 1,
+    defaultStock: 10,
     isActive: true,
     createdSince: 1000,
     discount: 0,
@@ -86,8 +101,10 @@ export const mockNewestProducts: productType[] = [
   {
     id: 'newProduct2ID',
     name: 'new Product 2',
+    slug: 'new-product-2',
     description: 'description2',
     price: 10,
+    defaultStock: 10,
     isActive: false,
     createdSince: 0,
     discount: 0,
@@ -96,8 +113,10 @@ export const mockNewestProducts: productType[] = [
   {
     id: 'newProduct3ID',
     name: 'new Product 3',
+    slug: 'new-product-3',
     description: 'description3',
     price: 100,
+    defaultStock: 10,
     isActive: true,
     createdSince: 100,
     discount: 10,
@@ -106,8 +125,10 @@ export const mockNewestProducts: productType[] = [
   {
     id: 'newProduct4ID',
     name: 'new Product 4',
+    slug: 'new-product-4',
     description: 'description4',
     price: 1000,
+    defaultStock: 10,
     isActive: true,
     createdSince: 1,
     discount: 0,
@@ -116,8 +137,10 @@ export const mockNewestProducts: productType[] = [
   {
     id: 'newProduct5ID',
     name: 'new Product 5',
+    slug: 'new-product-5',
     description: 'description5',
     price: 10000,
+    defaultStock: 10,
     isActive: false,
     createdSince: 10,
     discount: 100,
@@ -129,8 +152,10 @@ export const mockPopularProducts: productType[] = [
   {
     id: 'popularProduct1ID',
     name: 'popular Product 1',
+    slug: 'popular-product-1',
     description: 'description1',
     price: 1,
+    defaultStock: 10,
     isActive: true,
     createdSince: 0,
     discount: 0,
@@ -139,8 +164,10 @@ export const mockPopularProducts: productType[] = [
   {
     id: 'popularProduct2ID',
     name: 'popular Product 2',
+    slug: 'popular-product-2',
     description: 'description2',
     price: 10,
+    defaultStock: 10,
     isActive: false,
     createdSince: 0,
     discount: 0,
@@ -149,8 +176,10 @@ export const mockPopularProducts: productType[] = [
   {
     id: 'popularProduct3ID',
     name: 'popular Product 3',
+    slug: 'popular-product-3',
     description: 'description3',
     price: 100,
+    defaultStock: 10,
     isActive: true,
     createdSince: 0,
     discount: 10,
@@ -159,8 +188,10 @@ export const mockPopularProducts: productType[] = [
   {
     id: 'popularProduct4ID',
     name: 'popular Product 4',
+    slug: 'popular-product-4',
     description: 'description4',
     price: 1000,
+    defaultStock: 10,
     isActive: true,
     createdSince: 0,
     discount: 0,
@@ -169,14 +200,63 @@ export const mockPopularProducts: productType[] = [
   {
     id: 'popularProduct5ID',
     name: 'popular Product 5',
+    slug: 'popular-product-5',
     description: 'description5',
     price: 10000,
+    defaultStock: 10,
     isActive: false,
     createdSince: 0,
     discount: 100,
     imagePaths: ['img5.jpg'],
   },
 ];
+
+export const mockProductWithVariantsAndTags: productType = {
+  id: 'variantProductID',
+  name: 'Product With Variants and Search Tags',
+  slug: 'product-slug',
+  description: 'description',
+  categories: ['category 1', 'category 2'],
+  price: 10000,
+  variants: [
+    {
+      groupName: 'size',
+      type: 'text',
+      variants: [
+        {
+          name: 'M',
+          stock: 5,
+        },
+        {
+          name: 'L',
+          stock: 5,
+        },
+      ],
+    },
+  ],
+  searchTags: [
+    {
+      name: 'size',
+      value: 'M',
+    },
+    {
+      name: 'size',
+      value: 'L',
+    },
+  ],
+  isActive: true,
+  createdSince: 0,
+  discount: 100,
+  imagePaths: ['img5.jpg'],
+};
+
+export const mockSearchTags = {
+  searchTags: [
+    { name: 'tag1', value: 'value1' },
+    { name: 'tag2', value: 'value2' },
+  ] as NonNullable<productType['searchTags']>,
+  maxPrice: 1000,
+};
 
 export const mockCustomers: customerType[] = [
   { id: 'customer1ID', email: 'customer1@email.com', orders: ['orderId1'] },
@@ -195,6 +275,7 @@ export const mockOrders: orderType[] = [
     customerId: 'customer1Id',
     customerEmail: 'customer1@email.com',
     pricePaid: 100,
+    variants: [{ name: 'size', value: 'M' }],
   },
   {
     id: 'order2ID',
@@ -222,6 +303,8 @@ export const mockOrders: orderType[] = [
   },
 ];
 
+export const mockOrderWithVariant = mockOrders[0];
+
 export const mockOptions: tableOptionType[] = [
   {
     id: 'edit',
@@ -244,9 +327,9 @@ export const mockInvalidUser = { username: 'badUser', password: 'badPass' };
 
 export function getMockActivatedRoute(
   routeKey: string,
-  routeValue: string,
+  routeValue: string | null,
   queryKey?: string,
-  queryValue?: string
+  queryValue?: string,
 ) {
   return {
     paramMap: of({

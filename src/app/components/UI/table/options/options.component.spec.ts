@@ -27,7 +27,7 @@ describe('OptionsComponent', () => {
 
   it('should display button', () => {
     const button = fixture.debugElement.nativeElement.querySelector(
-      'button'
+      'button',
     ) as HTMLButtonElement;
 
     expect(button).toBeTruthy();
@@ -35,11 +35,11 @@ describe('OptionsComponent', () => {
 
   it('should display options menu labels if open state is true', () => {
     const labels = fixture.debugElement.nativeElement.querySelectorAll(
-      '[data-test-label]'
+      '[data-testid="label"]',
     ) as NodeList;
 
     expect(
-      Array.from(labels).map((label) => label.textContent!.trim())
+      Array.from(labels).map((label) => label.textContent!.trim()),
     ).toEqual(component.options.map((option) => option.label));
   });
 
@@ -47,7 +47,7 @@ describe('OptionsComponent', () => {
     component.isOpen = false;
     fixture.detectChanges();
     const labels = fixture.debugElement.nativeElement.querySelectorAll(
-      '[data-test-label]'
+      '[data-testid="label"]',
     ) as NodeList;
 
     expect(labels.length).toBe(0);
@@ -58,11 +58,11 @@ describe('OptionsComponent', () => {
     component.dialogOpen = optionWithDialog!.id;
     fixture.detectChanges();
     const dialogElement = fixture.debugElement.nativeElement.querySelector(
-      '[data-test-dialog]'
+      '[data-testid="dialog"]',
     ) as HTMLElement;
 
     expect(
-      dialogElement.textContent!.includes(optionWithDialog?.dialog!)
+      dialogElement.textContent!.includes(optionWithDialog?.dialog!),
     ).toBeTrue();
   });
 
@@ -70,7 +70,7 @@ describe('OptionsComponent', () => {
     component.options[0].error = 'mock error';
     fixture.detectChanges();
     const errorElement = fixture.debugElement.nativeElement.querySelector(
-      '[data-test-error]'
+      '[data-testid="error"]',
     ) as HTMLElement;
 
     expect(errorElement).toBeTruthy();
@@ -84,11 +84,11 @@ describe('OptionsComponent', () => {
       done();
     });
     const labels = fixture.debugElement.nativeElement.querySelectorAll(
-      '[data-test-label]'
+      '[data-testid="label"]',
     ) as NodeList;
 
     expect((labels.item(0) as HTMLButtonElement).textContent?.trim()).toBe(
-      component.options[0].label
+      component.options[0].label,
     );
 
     (labels.item(0) as HTMLButtonElement).click();
@@ -103,10 +103,10 @@ describe('OptionsComponent', () => {
       done();
     });
     const labels = fixture.debugElement.nativeElement.querySelectorAll(
-      '[data-test-label]'
+      '[data-testid="label"]',
     ) as NodeList;
     const indexOfOptionWithDialog = component.options.findIndex(
-      (option) => option.dialog !== undefined
+      (option) => option.dialog !== undefined,
     );
     (labels.item(indexOfOptionWithDialog) as HTMLButtonElement).click();
     fixture.detectChanges();

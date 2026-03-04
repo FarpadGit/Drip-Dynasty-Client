@@ -19,8 +19,14 @@ import { LabelDirective } from '../../../directives/UI/label.directive';
 })
 export class NumberInputComponent implements ControlValueAccessor {
   @Input() title: string = '';
+  @Input('name') _name: string = '';
   @Input() maxValue: bigint | number = 2000000000n;
   @Input() labelHidden: boolean = false;
+  @Input() suffix: string = 'Ft';
+
+  get name() {
+    return this._name || this.title;
+  }
 
   numericValue: bigint = 1n;
   maskedValue: string = '1';
@@ -71,7 +77,7 @@ export class NumberInputComponent implements ControlValueAccessor {
     this.setInputCaret(
       input,
       e.key === 'Delete' || this.isTextSelected ? 'start' : 'end',
-      caretPos
+      caretPos,
     );
 
     //callback for reactive forms
@@ -97,12 +103,12 @@ export class NumberInputComponent implements ControlValueAccessor {
   setInputCaret(
     input: HTMLInputElement,
     positionFrom: 'start' | 'end',
-    caretPosition: number | null = null
+    caretPosition: number | null = null,
   ) {
     if (positionFrom === 'end') {
       input.setSelectionRange(
         this.maskedValue.length - this.caretOffset!,
-        this.maskedValue.length - this.caretOffset!
+        this.maskedValue.length - this.caretOffset!,
       );
     } else {
       input.setSelectionRange(caretPosition, caretPosition);

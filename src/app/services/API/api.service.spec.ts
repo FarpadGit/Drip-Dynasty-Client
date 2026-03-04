@@ -31,7 +31,7 @@ describe('APIService', () => {
         password: mockInvalidUser.password,
       })
       .reply(200, false)
-      .onPost('/resetDB')
+      .onPost('/reset-db')
       .reply(200, 'resetDB called');
 
     TestBed.configureTestingModule({
@@ -49,7 +49,7 @@ describe('APIService', () => {
       const response = await service.makeFormRequest(
         '/fakeEndpointForFormData',
         'POST',
-        new FormData()
+        new FormData(),
       );
 
       expect(response).toBe('form data recieved (post)');
@@ -59,7 +59,7 @@ describe('APIService', () => {
       const response = await service.makeFormRequest(
         '/fakeEndpointForFormData',
         'PUT',
-        new FormData()
+        new FormData(),
       );
 
       expect(response).toBe('form data recieved (put)');
@@ -88,7 +88,7 @@ describe('APIService', () => {
     it('should be able to login user with correct credentials', async () => {
       const response = await service.login(
         mockValidUser.username,
-        mockValidUser.password
+        mockValidUser.password,
       );
 
       expect(response).toBeTrue();
@@ -96,7 +96,7 @@ describe('APIService', () => {
     it('should deny login from user with bad credentials', async () => {
       const response = await service.login(
         mockInvalidUser.username,
-        mockInvalidUser.password
+        mockInvalidUser.password,
       );
 
       expect(response).toBeFalse();

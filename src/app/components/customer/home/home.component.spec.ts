@@ -82,6 +82,7 @@ describe('HomeComponent (Customer facing)', () => {
 
     fixture = TestBed.createComponent(HomeComponent);
     component = fixture.componentInstance;
+    await component.ngOnInit();
     fixture.detectChanges();
   });
 

@@ -6,6 +6,7 @@ import { NavButtonComponent } from './nav-button.component';
 import { SectionHeadComponent } from './section-head.component';
 import { SeparatorComponent } from './separator.component';
 import { SliderComponent } from './slider.component';
+import { StyledButtonComponent } from './styled-button.component';
 
 basicComponentTestFor(BadgeComponent);
 basicComponentTestFor(CatalogButtonComponent, { withRouter: true });
@@ -14,3 +15,4 @@ basicComponentTestFor(NavButtonComponent, { withRouter: true });
 basicComponentTestFor(SectionHeadComponent);
 basicComponentTestFor(SeparatorComponent);
 basicComponentTestFor(SliderComponent);
+basicComponentTestFor(StyledButtonComponent);
