@@ -30,7 +30,6 @@ describe('CustomersComponent (Admin facing)', () => {
 
     fixture = TestBed.createComponent(CustomersComponent);
     component = fixture.componentInstance;
-    await component.ngOnInit();
     fixture.detectChanges();
   });
 

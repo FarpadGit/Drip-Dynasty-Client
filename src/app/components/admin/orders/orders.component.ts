@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, effect, ViewChild } from '@angular/core';
 import { OrderService } from '../../../services/order.service';
 import {
   TableComponent,
@@ -14,7 +14,7 @@ import { formatCurrency } from '../../../utils/formatters';
   imports: [HeaderDirective, TableComponent],
   templateUrl: './orders.component.html',
 })
-export class OrdersComponent implements OnInit {
+export class OrdersComponent {
   @ViewChild('table') table!: TableComponent;
   private orders: asyncType<orderType[]> = {
     isLoading: false,
@@ -22,11 +22,12 @@ export class OrdersComponent implements OnInit {
     value: null,
   };
 
-  constructor(private orderService: OrderService) {}
+  constructor(private orderService: OrderService) {
+    this.orderService.fetchOrders();
 
-  async ngOnInit(): Promise<void> {
-    await this.orderService.fetchOrders();
-    this.orders = this.orderService.getOrders();
+    effect(() => {
+      this.orders = this.orderService.getOrders();
+    });
   }
 
   get isLoading() {
