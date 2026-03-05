@@ -1,4 +1,4 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component, effect, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
@@ -89,6 +89,10 @@ export class ProductsComponent implements OnDestroy {
 
       await this.fetchProducts(0);
     });
+
+    effect(() => {
+      this.activeProducts = this.productService.getProducts();
+    });
   }
 
   ngOnDestroy(): void {
@@ -103,7 +107,6 @@ export class ProductsComponent implements OnDestroy {
     };
 
     await this.productService.fetchProducts(productFilters ?? 'all');
-    this.activeProducts = this.productService.getProducts();
     this.page = page;
     this.pages = this.calculatePages();
   }

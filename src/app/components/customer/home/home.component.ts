@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, effect, Inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ProductService } from '../../../services/product.service';
 import { ProductCardComponent } from '../../UI/product-card/product-card.component';
@@ -32,7 +32,7 @@ import { EnvService } from '../../../services/env.service';
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent {
   titleGlitchEffect: boolean = true;
   newestProducts: asyncType<productType[]> = {
     isLoading: false,
@@ -64,12 +64,13 @@ export class HomeComponent implements OnInit {
     @Inject('instance1') private newestProductsService: ProductService,
     @Inject('instance2') private mostPopularProductsService: ProductService,
     private process: EnvService,
-  ) {}
+  ) {
+    this.newestProductsService.fetchProducts('newest');
+    this.mostPopularProductsService.fetchProducts('popular');
 
-  async ngOnInit(): Promise<void> {
-    await this.newestProductsService.fetchProducts('newest');
-    await this.mostPopularProductsService.fetchProducts('popular');
-    this.newestProducts = this.newestProductsService.getProducts();
-    this.mostPopularProducts = this.mostPopularProductsService.getProducts();
+    effect(() => {
+      this.newestProducts = this.newestProductsService.getProducts();
+      this.mostPopularProducts = this.mostPopularProductsService.getProducts();
+    });
   }
 }
